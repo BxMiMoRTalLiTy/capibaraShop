@@ -1,0 +1,15 @@
+# NetBeans / Java typical exclusions
+/build/
+nbproject/private/
+*.class
+*.log
+*.jar
+*.iml
+*.swp
+*.tmp
+*.bak
+out/
+target/
+.idea/
+.DS_Store
+Thumbs.db
