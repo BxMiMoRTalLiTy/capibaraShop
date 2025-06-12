@@ -4,6 +4,8 @@
  */
 package com.capibarashop.clases;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JOptionPane;
 
 public class UsuarioDAO {
@@ -93,4 +95,22 @@ public class UsuarioDAO {
         }
     }
     
+    public List<Rol> obtenerRoles() throws SQLException{
+        List<Rol> lista = new ArrayList<>();
+        String sql = "SELECT id_Rol, nombreRol FROM Roles "
+                + "WHERE nombreRol <> 'Administrador'";
+        
+        try(Connection con = Conexion.getConexion();
+                PreparedStatement insert = con.prepareStatement(sql);
+                ResultSet rs = insert.executeQuery()){
+            while(rs.next()){
+                Rol rol = new Rol(rs.getInt("id_Rol"), rs.getString("nombreRol"));
+                lista.add(rol);
+            }
+        } catch(SQLException e){
+            e.printStackTrace();
+        }
+        
+        return lista;
+    }
 }

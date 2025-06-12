@@ -16,6 +16,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import java.sql.Date;
+import java.util.List;
 
 /**
  *
@@ -30,6 +31,7 @@ public class P_Register extends javax.swing.JPanel {
      */
     public P_Register() throws SQLException {
         initComponents();
+        cargarRoles();
 //        try {
 //            cargarRoles();
 //        } catch (SQLException e) {
@@ -294,25 +296,25 @@ public class P_Register extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     
-    private void cargarRoles() throws SQLException{
-        String sql = "SELECT id_Rol, nombreRol, FROM Roles";
-        
-        try (Connection con = Conexion.getConexion();
-            PreparedStatement insert = con.prepareStatement(sql);
-            ResultSet rs = insert.executeQuery()) {
-            
-            jcbRol.removeAllItems();
-            jcbRol.addItem(new Rol(0, "Elegir"));
-            
-            while(rs.next()){
-                int id = rs.getInt("id_Rol");
-                String nombre_Rol = rs.getString("nombreRol");
-                jcbRol.addItem(new Rol(id, nombre_Rol));
-            }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Error al cargar roles: " + e.getMessage());
-        }
-    }
+//    private void cargarRoles() throws SQLException, SQLException, SQLException, SQLException, SQLException{
+//        String sql = "SELECT id_Rol, nombreRol, FROM Roles";
+//        
+//        try (Connection con = Conexion.getConexion();
+//            PreparedStatement insert = con.prepareStatement(sql);
+//            ResultSet rs = insert.executeQuery()) {
+//            
+//            jcbRol.removeAllItems();
+//            jcbRol.addItem(new Rol(0, "Elegir"));
+//            
+//            while(rs.next()){
+//                int id = rs.getInt("id_Rol");
+//                String nombre_Rol = rs.getString("nombreRol");
+//                jcbRol.addItem(new Rol(id, nombre_Rol));
+//            }
+//        } catch (SQLException e) {
+//            JOptionPane.showMessageDialog(this, "Error al cargar roles: " + e.getMessage());
+//        }
+//    }
     
     private void txtUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtUserActionPerformed
         // ODO add your handling code here:
@@ -375,10 +377,22 @@ public class P_Register extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(this, "Este correo ya está registrado. Usa uno diferente.");
             return;
         }
-
+        
+        if(rol.getId() == 0){
+            JOptionPane.showMessageDialog(this, "Selecciona un rol valido");
+            return;
+        }
+        
         try {
             if (dao.insertarUsuario(nuevo)) {
                 JOptionPane.showMessageDialog(this, "Registro exitoso.");
+                
+                this.removeAll();
+                this.setLayout(new BorderLayout());
+                this.add(new P_Login(), BorderLayout.CENTER); // ← tu panel de logeo
+                this.revalidate();
+                this.repaint();
+                
                 // Puedes regresar al login si quieres aquí
             } else {
                 JOptionPane.showMessageDialog(this, "Error al registrar.");
@@ -389,18 +403,40 @@ public class P_Register extends javax.swing.JPanel {
     
     }//GEN-LAST:event_jButtonRegisterActionPerformed
 
+    private void cargarRoles(){
+        UsuarioDAO dao = new UsuarioDAO();
+        List<Rol> roles;
+        
+        try {
+            roles = dao.obtenerRoles();
+            jcbRol.removeAllItems();
+            jcbRol.addItem(new Rol(0, "Elegir"));
+        
+            for(Rol rol : roles){
+                jcbRol.addItem(rol);
+            }
+        } catch (SQLException ex) {
+            System.getLogger(P_Register.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+    }
+    
+   
+    
     private void jLabelRegisterMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelRegisterMouseClicked
         // TODO add your handling code here:
         Container parent = this.getParent();
 
         // Limpiar y cargar el nuevo panel
         parent.removeAll();
-        parent.setLayout(new BorderLayout());
-        parent.add(new P_Login(), BorderLayout.CENTER); // ← tu panel de registro
-        parent.revalidate();
-        parent.repaint();
+        try {
+            FrameLogin.cambiarContenido(parent,1);
+        } catch (SQLException ex) {
+            System.getLogger(P_Register.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
     }//GEN-LAST:event_jLabelRegisterMouseClicked
 
+    
+    
     private void txtPass2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPass2ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtPass2ActionPerformed

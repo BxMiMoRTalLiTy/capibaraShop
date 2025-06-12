@@ -5,7 +5,9 @@
 package com.capibarashop.swin;
 
 import java.awt.BorderLayout;
+import java.awt.Container;
 import java.awt.FlowLayout;
+import java.sql.SQLException;
 
 /**
  *
@@ -18,15 +20,32 @@ public class FrameLogin extends javax.swing.JFrame {
     /**
      * Creates new form FrameLogin
      */
-    public FrameLogin() {
+    public FrameLogin() throws SQLException {
         initComponents();
-        panelContenido.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 50));
-        panelContenido.removeAll();
-        panelContenido.add(new P_Login());
-        panelContenido.revalidate();
-        panelContenido.repaint();
+        cambiarContenido(panelContenido, 1);
+//        panelContenido.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 50));
+//        panelContenido.removeAll();
+//        panelContenido.add(new P_Login());
+//        panelContenido.revalidate();
+//        panelContenido.repaint();
     }
 
+    public static void cambiarContenido(Container parent, int seleccionarCual) throws SQLException{
+        parent.removeAll();
+        if(seleccionarCual == 1){
+            parent.setLayout(new BorderLayout());
+            parent.add(new P_Login(), BorderLayout.CENTER); // ← tu panel de logeo
+            parent.revalidate();
+            parent.repaint();
+        }
+        else if(seleccionarCual == 2){
+            parent.setLayout(new BorderLayout());
+            parent.add(new P_Register(), BorderLayout.CENTER); // ← tu panel de registro
+            parent.revalidate();
+            parent.repaint();
+        }
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -107,7 +126,13 @@ public class FrameLogin extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new FrameLogin().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> {
+            try {
+                new FrameLogin().setVisible(true);
+            } catch (SQLException ex) {
+                System.getLogger(FrameLogin.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            }
+        });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -182,11 +182,9 @@ public class P_Login extends javax.swing.JPanel {
         // TODO add your handling code here:
         Container parent = this.getParent();
 
-        // Limpiar y cargar el nuevo panel
-        parent.removeAll();
+        
         try {
-            parent.setLayout(new BorderLayout());
-            parent.add(new P_Register(), BorderLayout.CENTER); // ← tu panel de registro
+            FrameLogin.cambiarContenido(parent, 2);
         } catch (SQLException ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error al cargar P_Register:\n" + ex.getMessage());
