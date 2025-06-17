@@ -184,7 +184,7 @@ public class P_Login extends javax.swing.JPanel {
 
         
         try {
-            FrameLogin.cambiarContenido(parent, 2);
+            Panel_Login_Register.cambiarContenido(parent, 2);
         } catch (SQLException ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error al cargar P_Register:\n" + ex.getMessage());

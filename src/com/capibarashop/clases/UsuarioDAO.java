@@ -10,10 +10,11 @@ import javax.swing.JOptionPane;
 
 public class UsuarioDAO {
     public Usuario login(String usuario, String contrasena) throws SQLException{
-        String sql = "SELECT u.id_Usuario, u.usuarioNombre, u.contrasena, r.nombreRol "
-                + "FROM Usuarios u "
-                + "JOIN ROLES r ON u.id_rol = r.id_Rol "
-                + "WHERE u.usuarioNombre = ? AND u.contrasena = ?";
+        String sql = "SELECT u.id_Usuario, u.usuarioNombre, u.nombre, u.contrasena, u.email, u.fechaNacimiento, u.tel, u.id_rol, r.nombreRol "
+            + "FROM Usuarios u "
+            + "JOIN ROLES r ON u.id_rol = r.id_Rol "
+            + "WHERE u.usuarioNombre = ? AND u.contrasena = ?";
+
         
         try(Connection con = Conexion.getConexion();
             PreparedStatement ps = con.prepareStatement(sql)) {

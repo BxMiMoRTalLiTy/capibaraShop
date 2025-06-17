@@ -429,7 +429,7 @@ public class P_Register extends javax.swing.JPanel {
         // Limpiar y cargar el nuevo panel
         parent.removeAll();
         try {
-            FrameLogin.cambiarContenido(parent,1);
+            Panel_Login_Register.cambiarContenido(parent,1);
         } catch (SQLException ex) {
             System.getLogger(P_Register.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
         }
