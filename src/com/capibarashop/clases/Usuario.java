@@ -15,6 +15,9 @@ public class Usuario {
     private String email;
     private Date fechaNacimiento;
     private String tel;
+    
+    private static Usuario usuarioActual;
+    
     //usuarioNombre, nombre, contrasena, email, tel, id_rol
     //Constructor
     public Usuario(String usuarioNombre, String nombre, String contrasena, String email, Date fechaNacimiento, String tel, int idRol){
@@ -61,6 +64,10 @@ public class Usuario {
         return tel;
     }
     
+    public static Usuario getUsuarioActual(){
+        return usuarioActual;
+    }
+    
     public void setId(int id){
         this.id=id;
     }
@@ -91,6 +98,10 @@ public class Usuario {
     
     public void setTel(String tel){
         this.tel = tel;
+    }
+    
+    public static void setUsuarioActual(Usuario u){
+        usuarioActual = u;
     }
         
 }

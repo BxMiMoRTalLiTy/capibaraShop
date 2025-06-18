@@ -6,8 +6,13 @@ package com.capibarashop.swin;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Image;
 import java.sql.SQLException;
+import javax.swing.ImageIcon;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -19,28 +24,47 @@ public class Panel_Login_Register extends javax.swing.JPanel {
 
     /**
      * Creates new form FrameLogin
+     * @throws java.sql.SQLException
      */
     public Panel_Login_Register() throws SQLException {
         initComponents();
         cambiarContenido(panelContenido, 1);
-//        panelContenido.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 50));
-//        panelContenido.removeAll();
-//        panelContenido.add(new P_Login());
-//        panelContenido.revalidate();
-//        panelContenido.repaint();
     }
 
-    public static void cambiarContenido(Container parent, int seleccionarCual) throws SQLException{
+//    public static void cambiarContenido(Container parent, int seleccionarCual) throws SQLException{
+//        parent.removeAll();
+//        if(seleccionarCual == 1){
+//            parent.setLayout(new BorderLayout());
+//            parent.add(new P_Login(), BorderLayout.CENTER); // ← tu panel de logeo
+//            parent.revalidate();
+//            parent.repaint();
+//        }
+//        else if(seleccionarCual == 2){
+//            parent.setLayout(new BorderLayout());
+//            parent.add(new P_Register(), BorderLayout.CENTER); // ← tu panel de registro
+//            parent.revalidate();
+//            parent.repaint();
+//        }
+//    }
+    
+    public static void cambiarContenido(Container parent, int seleccionarCual) throws SQLException {
         parent.removeAll();
-        if(seleccionarCual == 1){
-            parent.setLayout(new BorderLayout());
-            parent.add(new P_Login(), BorderLayout.CENTER); // ← tu panel de logeo
-            parent.revalidate();
-            parent.repaint();
+        parent.setLayout(new BorderLayout());
+        
+        JPanel nuevoPanel = null;
+        
+        if (seleccionarCual == 1) {
+            nuevoPanel = new P_Login();
+        } else if (seleccionarCual == 2) {
+            nuevoPanel = new P_Register();
         }
-        else if(seleccionarCual == 2){
-            parent.setLayout(new BorderLayout());
-            parent.add(new P_Register(), BorderLayout.CENTER); // ← tu panel de registro
+        
+        if (nuevoPanel != null) {
+            nuevoPanel.setSize(parent.getSize());
+            nuevoPanel.setPreferredSize(parent.getSize());
+            nuevoPanel.setLocation(0, 0);
+
+            parent.add(nuevoPanel, BorderLayout.CENTER);
             parent.revalidate();
             parent.repaint();
         }
@@ -58,7 +82,14 @@ public class Panel_Login_Register extends javax.swing.JPanel {
         jPanel1 = new javax.swing.JPanel();
         panelContenido = new javax.swing.JPanel();
 
-        jPanel1.setBackground(new java.awt.Color(30, 133, 237));
+        jPanel1.setBackground(new java.awt.Color(204, 102, 255));
+        jPanel1.setMaximumSize(new java.awt.Dimension(890, 600));
+        jPanel1.setMinimumSize(new java.awt.Dimension(890, 600));
+
+        panelContenido.setBackground(new java.awt.Color(204, 44, 229));
+        panelContenido.setForeground(new java.awt.Color(204, 44, 229));
+        panelContenido.setMaximumSize(null);
+        panelContenido.setName(""); // NOI18N
 
         javax.swing.GroupLayout panelContenidoLayout = new javax.swing.GroupLayout(panelContenido);
         panelContenido.setLayout(panelContenidoLayout);
@@ -75,17 +106,17 @@ public class Panel_Login_Register extends javax.swing.JPanel {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(282, Short.MAX_VALUE)
-                .addComponent(panelContenido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(38, 38, 38))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(161, 161, 161)
+                .addComponent(panelContenido, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(159, 159, 159))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(82, 82, 82)
-                .addComponent(panelContenido, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(88, Short.MAX_VALUE))
+                .addComponent(panelContenido, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(88, 88, 88))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
