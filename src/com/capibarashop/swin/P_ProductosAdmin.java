@@ -4,10 +4,17 @@
  */
 package com.capibarashop.swin;
 
+import com.capibarashop.clases.CategoriaDAO;
 import com.capibarashop.clases.Producto;
+import com.capibarashop.clases.ProductoDAO;
 import com.capibarashop.clases.Usuario;
 import com.capibarashop.dialogs.DialogAgregarProducto;
+import com.capibarashop.dialogs.DialogEliminarProducto;
+import java.awt.Image;
+import java.sql.SQLException;
 import java.util.List;
+import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -68,6 +75,7 @@ public class P_ProductosAdmin extends javax.swing.JPanel {
         jScrollPane1.setViewportView(jList1);
 
         jScrollPaneTablaProductos.setViewportView(jTPaneProductos);
+        jTPaneProductos.setEditable(false);
 
         jBActualizarL.setFont(new java.awt.Font("STXinwei", 0, 24)); // NOI18N
         jBActualizarL.setText("Actualizar Lista");
@@ -186,19 +194,67 @@ public class P_ProductosAdmin extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jBActualizarLActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBActualizarLActionPerformed
-        // TODO add your handling code here:
+        ProductoDAO dao = new ProductoDAO();
+        
+        try {
+            List<Producto> productos;
+            if(Usuario.getUsuarioActual().getId() == 1){
+                productos = dao.listarProductosAdmin();
+            }
+            else{
+               productos = dao.listarProductosPorUsuario(Usuario.getUsuarioActual().getId());
+            }
+            
+            listarMisProductos(productos);
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error al recargar productos.");
+        }
     }//GEN-LAST:event_jBActualizarLActionPerformed
 
     private void jBAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBAgregarActionPerformed
         // TODO add your handling code here:
         DialogAgregarProducto dialog = new DialogAgregarProducto(null, true);
         dialog.setVisible(true);
+        
+        ProductoDAO dao = new ProductoDAO();
+                    
+        try {
+            List<Producto> productos;
+            if(Usuario.getUsuarioActual().getId() == 1){
+                productos = dao.listarProductosAdmin();
+            }
+            else{
+               productos = dao.listarProductosPorUsuario(Usuario.getUsuarioActual().getId());
+            }
+            
+            listarMisProductos(productos);
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error al recargar productos.");
+        }
     }//GEN-LAST:event_jBAgregarActionPerformed
 
     private void jBEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBEliminarActionPerformed
         // TODO add your handling code here:
+        DialogEliminarProducto dialog = new DialogEliminarProducto(null, true);
+        dialog.setVisible(true);
+        
+        ProductoDAO dao = new ProductoDAO();
+        
+        try {
+            List<Producto> productos;
+            if(Usuario.getUsuarioActual().getId() == 1){
+                productos = dao.listarProductosAdmin();
+            }
+            else{
+               productos = dao.listarProductosPorUsuario(Usuario.getUsuarioActual().getId());
+            }
+            
+            listarMisProductos(productos);
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error al recargar productos.");
+        }
+        
     }//GEN-LAST:event_jBEliminarActionPerformed
-
 
     public void listarMisProductos(List<Producto> productos){
         StringBuilder sb = new StringBuilder();
@@ -221,10 +277,26 @@ public class P_ProductosAdmin extends javax.swing.JPanel {
                             }
                             td {
                                 padding: 5px;
+                                max-width: 200px;
+                                word-wrap: break-word;
+                                white-space: normal;
+                                overflow-wrap: break-word;
+                                word-break: break-all;
+                                text-align: left;
+                                vertical-align: top;
                             }
                             table {
                                 width: 100%;
                             }
+                  
+                            .desc {
+                              max-height: 60px;
+                              overflow-y: auto;
+                              overflow-x: hidden;
+                              word-wrap: break-word;
+                              white-space: normal;
+                            }
+                            
                           </style>
                         </head>
                     <body>
@@ -236,6 +308,7 @@ public class P_ProductosAdmin extends javax.swing.JPanel {
                             <th>Precio</th>
                             <th>Stock</th>
                             <th>Descripción</th>
+                            <th>Categoría</th>
                         </tr>
                   """);
         
@@ -245,7 +318,8 @@ public class P_ProductosAdmin extends javax.swing.JPanel {
             sb.append("<td>").append(p.getNombre()).append("</td>");
             sb.append("<td>").append(p.getPrecio()).append("</td>");
             sb.append("<td>").append(p.getStock()).append("</td>");
-            sb.append("<td>").append(p.getDescripcion()).append("</td>");
+            sb.append("<td> <div class=\"desc\">").append(p.getDescripcion()).append(" </div> </td>");
+            sb.append("<td>").append(p.getNombreCategoria()).append("</td>");
             sb.append("</tr>");
         }
         
@@ -257,7 +331,7 @@ public class P_ProductosAdmin extends javax.swing.JPanel {
         
         jTPaneProductos.setContentType("text/html");
         jTPaneProductos.setText(sb.toString());
-        
+        jTPaneProductos.setCaretPosition(0); // Regresa al inicio visual
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables

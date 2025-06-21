@@ -49,7 +49,7 @@ public class P_Login extends javax.swing.JPanel {
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
-        txtPass = new javax.swing.JTextField();
+        txtPass = new javax.swing.JPasswordField();
         txtUserName = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         jButtonLogin = new javax.swing.JButton();
@@ -205,7 +205,7 @@ public class P_Login extends javax.swing.JPanel {
     private void jButtonLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonLoginActionPerformed
         // TODO add your handling code here:
         String user = txtUserName.getText().trim();
-        String pass = txtPass.getText().trim();
+        String pass = new String(txtPass.getPassword()).trim();
         
         UsuarioDAO dao = new UsuarioDAO();
         
@@ -214,19 +214,19 @@ public class P_Login extends javax.swing.JPanel {
             if (nuevo != null) {
                 JOptionPane.showMessageDialog(this, "Bienvenido " + nuevo.getNombre());
                 Usuario.setUsuarioActual(nuevo);
-
+                //JOptionPane.showMessageDialog(this, "El id del usuario es: " + Usuario.getUsuarioActual().getId());
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
                 frame.dispose();
-
-                if(nuevo.getIdRol() == 1 || nuevo.getIdRol() == 2){
+                
+                if(nuevo.getIdRol() == 1 || nuevo.getIdRol() == 3){
                     //Admin o Vendedor
 
                     JFrame main;
 
                     if(nuevo.getIdRol() == 1)
-                    main = new JFrame("Panel de Porductos Admin");
+                    main = new JFrame("Panel de Productos Admin");
                     else
-                    main = new JFrame("Panel de Porductos del vendedor");
+                    main = new JFrame("Panel de Productos del vendedor");
 
                     main.setContentPane(new P_ProductosAdmin());
                     main.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -251,10 +251,12 @@ public class P_Login extends javax.swing.JPanel {
 
     private void txtPassActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPassActionPerformed
         // TODO add your handling code here:
+        jButtonLogin.doClick();
     }//GEN-LAST:event_txtPassActionPerformed
 
     private void txtUserNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtUserNameActionPerformed
         // ODO add your handling code here:
+        txtPass.requestFocusInWindow();
     }//GEN-LAST:event_txtUserNameActionPerformed
 
     private void jLabelRegisterMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabelRegisterMouseEntered
@@ -296,7 +298,7 @@ public class P_Login extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabelRegister;
-    private javax.swing.JTextField txtPass;
+    private javax.swing.JPasswordField txtPass;
     private javax.swing.JTextField txtUserName;
     // End of variables declaration//GEN-END:variables
 }

@@ -22,16 +22,16 @@ import javax.swing.ScrollPaneConstants;
  *
  * @author Angel Aimar
  */
-public class DialogAgregarProducto extends javax.swing.JDialog {
+public class DialogActualizarProducto extends javax.swing.JDialog {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(DialogAgregarProducto.class.getName());
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(DialogActualizarProducto.class.getName());
 
     /**
      * Creates new form DialogAgregarProducto
      * @param parent
      * @param modal
      */
-    public DialogAgregarProducto(java.awt.Frame parent, boolean modal) {
+    public DialogActualizarProducto(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         ImageIcon icon = new ImageIcon(getClass().getResource("/com/capibarashop/resources/capibaraAddProduct.png"));
@@ -64,7 +64,6 @@ public class DialogAgregarProducto extends javax.swing.JDialog {
         jLCapibara = new javax.swing.JLabel();
         jSStock = new javax.swing.JSpinner();
         jSPrecio = new javax.swing.JSpinner();
-        jBCancelar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -126,7 +125,7 @@ public class DialogAgregarProducto extends javax.swing.JDialog {
                 jBGuardarActionPerformed(evt);
             }
         });
-        jPanel1.add(jBGuardar, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 350, 130, -1));
+        jPanel1.add(jBGuardar, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 350, 120, -1));
         jPanel1.add(jLCapibara, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 50, 50));
         jPanel1.add(jSStock, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 140, 110, -1));
         jSStock.setModel(new SpinnerNumberModel(0, 0, 10000, 1));
@@ -140,15 +139,6 @@ public class DialogAgregarProducto extends javax.swing.JDialog {
         jSPrecio.setModel(new SpinnerNumberModel(0, 0.00, 999999.99, 0.01));
         JSpinner.NumberEditor editor = new JSpinner.NumberEditor(jSPrecio, "$#,##0.00");
         jSPrecio.setEditor(editor);
-
-        jBCancelar.setFont(new java.awt.Font("STXinwei", 0, 18)); // NOI18N
-        jBCancelar.setText("Cancelar");
-        jBCancelar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jBCancelarActionPerformed(evt);
-            }
-        });
-        jPanel1.add(jBCancelar, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 350, 110, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -206,29 +196,17 @@ public class DialogAgregarProducto extends javax.swing.JDialog {
             ProductoDAO dao = new ProductoDAO();
             try {
                 if (dao.insertarProducto(productoNuevo)) {
-                    ImageIcon originalIcon = new ImageIcon(getClass().getResource("/com/capibarashop/resources/capibaraAddProduct.png"));
-                    Image imagen = originalIcon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
-                    ImageIcon icono = new ImageIcon(imagen);
-                    String mensaje = """
-                        <html>
-                            <div style='text-align: center;'>
-                                <h2 style='color: #2a4a89;'>¡Producto agregado!</h2>
-                                <p>El producto fue añadido correctamente a la base de datos.</p>
-                            </div>
-                        </html>
-                    """;
-
-                    JOptionPane.showMessageDialog(this, mensaje, "Éxito", JOptionPane.INFORMATION_MESSAGE, icono);
+                    JOptionPane.showMessageDialog(this, "Producto agregado correctamente.");
                     dispose(); // Cierra el diálogo
                 } else {
-                    JOptionPane.showMessageDialog(this, "No se pudo agregar el producto.", "Revisa que los datos esten bien declarados.",JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "No se pudo agregar el producto.");
                 }
             } catch (SQLException e) {
-                JOptionPane.showMessageDialog(this, "Hubo un error al guardar.", "Error" + e.getMessage(), JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Error al agregar producto: " + e.getMessage());
             }
         }
         else{
-            JOptionPane.showMessageDialog(this, "Hubo un error al guardar.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error al agregar producto");
         }
     }//GEN-LAST:event_jBGuardarActionPerformed
 
@@ -256,14 +234,8 @@ public class DialogAgregarProducto extends javax.swing.JDialog {
         // TODO add your handling code here:
     }//GEN-LAST:event_jCBCategoriaActionPerformed
 
-    private void jBCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBCancelarActionPerformed
-        // TODO add your handling code here:
-        this.dispose();
-    }//GEN-LAST:event_jBCancelarActionPerformed
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jBCancelar;
     private javax.swing.JButton jBGuardar;
     private javax.swing.JComboBox<Categoria> jCBCategoria;
     private javax.swing.JLabel jLCapibara;

@@ -15,18 +15,30 @@ public class Producto {
     private String descripcion;
     private int stock;
     private int idCategoria;
+    private int idUsuario;
+    private String nombreCategoria;
     
     public Producto(){
     
     }
     
-    public Producto(int id, String nombre, double precio, String descripcion, int stock, int idCategoria){
-        this.id = id;
+    public Producto(String nombre, double precio, String descripcion, int stock, int idCategoria, int idUsuario){
         this.nombre = nombre;
         this.precio = precio;
         this.descripcion = descripcion;
         this.stock = stock;
         this.idCategoria = idCategoria;
+        this.idUsuario = idUsuario;
+    }
+    
+    public Producto(String nombre, double precio, String descripcion, int stock, int idCategoria, int idUsuario, String nombreCategoria){
+        this.nombre = nombre;
+        this.precio = precio;
+        this.descripcion = descripcion;
+        this.stock = stock;
+        this.idCategoria = idCategoria;
+        this.idUsuario = idUsuario;
+        this.nombreCategoria = nombreCategoria;
     }
 
     /**
@@ -70,7 +82,16 @@ public class Producto {
     public int getIdCategoria() {
         return idCategoria;
     }
+    
+    public int getIdUsuario() {
+        return idUsuario;
+    }
 
+    public String getNombreCategoria() {
+        return nombreCategoria;
+    }
+
+    
     /**
      * @param id the id to set
      */
@@ -111,6 +132,14 @@ public class Producto {
      */
     public void setIdCategoria(int idCategoria) {
         this.idCategoria = idCategoria;
+    }
+    
+    public void setNombreCategoria(String nombreCategoria) {
+        this.nombreCategoria = nombreCategoria;
+    }
+    
+    public void setIdUsuario(int idUsuario) {
+        this.idUsuario = idUsuario;
     }
     
     

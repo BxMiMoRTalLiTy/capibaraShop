@@ -60,8 +60,8 @@ public class P_Register extends javax.swing.JPanel {
         buttonGroup1 = new javax.swing.ButtonGroup();
         jScrollPane1 = new javax.swing.JScrollPane();
         jList1 = new javax.swing.JList<>();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
+        jLRegister = new javax.swing.JLabel();
+        jLUserName = new javax.swing.JLabel();
         txtUser = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         jButtonRegister = new javax.swing.JButton();
@@ -92,11 +92,11 @@ public class P_Register extends javax.swing.JPanel {
         });
         jScrollPane1.setViewportView(jList1);
 
-        jLabel1.setFont(new java.awt.Font("STXinwei", 0, 48)); // NOI18N
-        jLabel1.setText("Register");
+        jLRegister.setFont(new java.awt.Font("STXinwei", 0, 48)); // NOI18N
+        jLRegister.setText("Register");
 
-        jLabel2.setFont(new java.awt.Font("STXinwei", 0, 18)); // NOI18N
-        jLabel2.setText("User Name");
+        jLUserName.setFont(new java.awt.Font("STXinwei", 0, 18)); // NOI18N
+        jLUserName.setText("User Name");
 
         txtUser.setBackground(new java.awt.Color(255, 255, 255));
         txtUser.setForeground(new java.awt.Color(0, 0, 0));
@@ -269,10 +269,10 @@ public class P_Register extends javax.swing.JPanel {
                         .addComponent(jLabel10))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(203, 203, 203)
-                        .addComponent(jLabel1))
+                        .addComponent(jLRegister))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(30, 30, 30)
-                        .addComponent(jLabel2))
+                        .addComponent(jLUserName))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(217, 217, 217)
                         .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 314, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -334,10 +334,10 @@ public class P_Register extends javax.swing.JPanel {
                         .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(17, 17, 17)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jLRegister, javax.swing.GroupLayout.PREFERRED_SIZE, 52, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(90, 90, 90)
-                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jLUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(117, 117, 117)
                         .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -352,10 +352,12 @@ public class P_Register extends javax.swing.JPanel {
     
     private void txtUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtUserActionPerformed
         // ODO add your handling code here:
+        txtNombre.requestFocusInWindow();
     }//GEN-LAST:event_txtUserActionPerformed
 
     private void txtPass1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPass1ActionPerformed
         // TODO add your handling code here:
+        txtPass2.requestFocusInWindow();
     }//GEN-LAST:event_txtPass1ActionPerformed
 
     private void jButtonRegisterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRegisterActionPerformed
@@ -473,18 +475,22 @@ public class P_Register extends javax.swing.JPanel {
     
     private void txtPass2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtPass2ActionPerformed
         // TODO add your handling code here:
+        txtEmail.requestFocusInWindow();
     }//GEN-LAST:event_txtPass2ActionPerformed
 
     private void txtEmailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtEmailActionPerformed
         // TODO add your handling code here:
+        txtTel.requestFocusInWindow();
     }//GEN-LAST:event_txtEmailActionPerformed
 
     private void txtNombreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNombreActionPerformed
         // TODO add your handling code here:
+        txtPass1.requestFocusInWindow();
     }//GEN-LAST:event_txtNombreActionPerformed
 
     private void txtTelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtTelActionPerformed
         // TODO add your handling code here:
+        jcbRol.requestFocusInWindow();
     }//GEN-LAST:event_txtTelActionPerformed
 
     private void jcbRolActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcbRolActionPerformed
@@ -527,9 +533,9 @@ public class P_Register extends javax.swing.JPanel {
     private com.toedter.calendar.JDateChooser jFechaNacimiento;
     private javax.swing.JLabel jFondoColor;
     private javax.swing.JLabel jLCapibara;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLRegister;
+    private javax.swing.JLabel jLUserName;
     private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;

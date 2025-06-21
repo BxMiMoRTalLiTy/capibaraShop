@@ -5,9 +5,11 @@
 package com.capibarashop.main;
 
 import com.capibarashop.swin.Panel_Login_Register;
+import java.awt.Color;
 import java.sql.SQLException;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 
 /**
  *
@@ -22,6 +24,8 @@ public class Frame_Main extends javax.swing.JFrame {
      */
     public Frame_Main() {
         initComponents();
+        UIManager.put("OptionPane.background", new Color(255, 255, 200));  // fondo del panel
+        UIManager.put("Panel.background", new Color(255, 255, 200));       // fondo interno del mensaje
     }
 
     /**

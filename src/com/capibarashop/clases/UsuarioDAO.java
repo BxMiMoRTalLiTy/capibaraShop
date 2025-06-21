@@ -25,6 +25,7 @@ public class UsuarioDAO {
                 
                 if(rs.next()){
                     return new Usuario(
+                            rs.getInt("id_Usuario"),
                             rs.getString("usuarioNombre"),
                             rs.getString("nombre"),
                             rs.getString("contrasena"),
