@@ -14,31 +14,22 @@ public class Producto {
     private double precio;
     private String descripcion;
     private int stock;
-    private int idCategoria;
-    private int idUsuario;
-    private String nombreCategoria;
+    private Categoria categoria;
+    private Usuario usuario;
+    private byte[] imagen;
     
     public Producto(){
     
     }
     
-    public Producto(String nombre, double precio, String descripcion, int stock, int idCategoria, int idUsuario){
+    public Producto(String nombre, double precio, String descripcion, int stock, byte[] imagen, Categoria categoria, Usuario usuario){
         this.nombre = nombre;
         this.precio = precio;
         this.descripcion = descripcion;
         this.stock = stock;
-        this.idCategoria = idCategoria;
-        this.idUsuario = idUsuario;
-    }
-    
-    public Producto(String nombre, double precio, String descripcion, int stock, int idCategoria, int idUsuario, String nombreCategoria){
-        this.nombre = nombre;
-        this.precio = precio;
-        this.descripcion = descripcion;
-        this.stock = stock;
-        this.idCategoria = idCategoria;
-        this.idUsuario = idUsuario;
-        this.nombreCategoria = nombreCategoria;
+        this.categoria = categoria;
+        this.usuario = usuario;
+        this.imagen = imagen;
     }
 
     /**
@@ -79,18 +70,17 @@ public class Producto {
     /**
      * @return the idCategoria
      */
-    public int getIdCategoria() {
-        return idCategoria;
+    public Categoria getCategoria() {
+        return categoria;
     }
     
-    public int getIdUsuario() {
-        return idUsuario;
+    public Usuario getUsuario() {
+        return usuario;
     }
-
-    public String getNombreCategoria() {
-        return nombreCategoria;
+    
+    public byte[] getImagen(){
+        return imagen;
     }
-
     
     /**
      * @param id the id to set
@@ -130,18 +120,16 @@ public class Producto {
     /**
      * @param idCategoria the idCategoria to set
      */
-    public void setIdCategoria(int idCategoria) {
-        this.idCategoria = idCategoria;
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
     }
     
-    public void setNombreCategoria(String nombreCategoria) {
-        this.nombreCategoria = nombreCategoria;
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
     
-    public void setIdUsuario(int idUsuario) {
-        this.idUsuario = idUsuario;
+    public void setImagen(byte[] imagen){
+        this.imagen = imagen;
     }
-    
-    
     
 }

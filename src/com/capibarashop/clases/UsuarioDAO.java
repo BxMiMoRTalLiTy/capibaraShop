@@ -9,8 +9,30 @@ import java.util.List;
 import javax.swing.JOptionPane;
 
 public class UsuarioDAO {
+    
+    private static final String CAMPOS_USUARIO_CON_ROL = """
+            u.id_Usuario, u.usuarioNombre, u.nombre, u.contrasena, u.email, u.fechaNacimiento, u.tel, u.id_rol, r.nombreRol
+        """;
+    
+    public Usuario construirUsuario(ResultSet rs) throws SQLException{
+        Usuario u = new Usuario();
+        
+        u.setId(rs.getInt("id_Usuario"));
+        u.setUsuarioNombre(rs.getString("usuarioNombre"));
+        u.setNombre(rs.getString("nombre"));
+        u.setContrasena(rs.getString("contrasena"));
+        u.setEmail(rs.getString("email"));
+        u.setFechaNacimiento(rs.getDate("fechaNacimiento"));
+        u.setTel(rs.getString("tel"));
+
+        Rol rol = new Rol(rs.getInt("id_Rol"), rs.getString("nombreRol"));
+        u.setRol(rol);
+
+        return u;
+    }
+    
     public Usuario login(String usuario, String contrasena) throws SQLException{
-        String sql = "SELECT u.id_Usuario, u.usuarioNombre, u.nombre, u.contrasena, u.email, u.fechaNacimiento, u.tel, u.id_rol, r.nombreRol "
+        String sql = "SELECT " + CAMPOS_USUARIO_CON_ROL
             + "FROM Usuarios u "
             + "JOIN ROLES r ON u.id_rol = r.id_Rol "
             + "WHERE u.usuarioNombre = ? AND u.contrasena = ?";
@@ -24,19 +46,10 @@ public class UsuarioDAO {
                 ResultSet rs = ps.executeQuery();
                 
                 if(rs.next()){
-                    return new Usuario(
-                            rs.getInt("id_Usuario"),
-                            rs.getString("usuarioNombre"),
-                            rs.getString("nombre"),
-                            rs.getString("contrasena"),
-                            rs.getString("email"),
-                            rs.getDate("fechaNacimiento"),
-                            rs.getString("tel"),
-                            rs.getInt("id_rol")
-                    );
+                    return construirUsuario(rs);
                 }
             } catch(SQLException e){
-                JOptionPane.showMessageDialog(null, "Error en el Login: " + e.getMessage());
+                JOptionPane.showMessageDialog(null, "Error" + e.getMessage(), "Hubo un error al guardar.", JOptionPane.ERROR_MESSAGE);
             }
         return null;
     }
@@ -46,19 +59,20 @@ public class UsuarioDAO {
                 + "VALUES (?, ?, ?, ?, ?, ?, ?)";
         
         try(Connection con = Conexion.getConexion();
-                PreparedStatement insert = con.prepareStatement(sql)){
+                PreparedStatement ps = con.prepareStatement(sql)){
             
-            insert.setString(1, u.getUsuarioNombre());
-            insert.setString(2, u.getNombre());
-            insert.setString(3, u.getContrasena());
-            insert.setString(4, u.getEmail());
-            insert.setDate(5, u.getFechaNacimiento());
-            insert.setString(6, u.getTel());
-            insert.setInt(7, u.getIdRol());
+            ps.setString(1, u.getUsuarioNombre());
+            ps.setString(2, u.getNombre());
+            ps.setString(3, u.getContrasena());
+            ps.setString(4, u.getEmail());
+            ps.setDate(5, u.getFechaNacimiento());
+            ps.setString(6, u.getTel());
+            ps.setInt(7, u.getRol().getId());
             
-            return insert.executeUpdate() > 0;
+            return ps.executeUpdate() > 0;
         } catch(SQLException e){
-            System.out.println("Error al registrar usuario: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Error al insertar el usuario" + e.getMessage(), "Hubo un error al guardar", 
+                    JOptionPane.ERROR_MESSAGE);
             return false;
         }
     }
@@ -67,10 +81,10 @@ public class UsuarioDAO {
         String sql = "SELECT 1 FROM Usuarios WHERE usuarioNombre = ?";
         
         try(Connection con = Conexion.getConexion();
-                PreparedStatement insert = con.prepareStatement(sql)){
-            insert.setString(1, usuarioNombre);
+                PreparedStatement ps = con.prepareStatement(sql)){
+            ps.setString(1, usuarioNombre);
             
-            try(ResultSet rs = insert.executeQuery()){
+            try(ResultSet rs = ps.executeQuery()){
                 return rs.next();
             }
         
@@ -80,14 +94,35 @@ public class UsuarioDAO {
         }
     }
     
+    public Usuario buscarUsuarioID(int id){
+        String sql = "SELECT " + CAMPOS_USUARIO_CON_ROL
+            + "FROM Usuarios u "
+            + "JOIN ROLES r ON u.id_rol = r.id_Rol "
+            + "WHERE u.id_Usuario = ?";
+        
+        try(Connection con = Conexion.getConexion();
+            PreparedStatement ps = con.prepareStatement(sql)) {
+                ps.setInt(1, id);
+                
+                ResultSet rs = ps.executeQuery();
+                
+                if(rs.next()){
+                    return construirUsuario(rs);
+                }
+            } catch(SQLException e){
+                JOptionPane.showMessageDialog(null, "Error" + e.getMessage(), "Hubo un error al guardar.", JOptionPane.ERROR_MESSAGE);
+            }
+        return null;
+    }
+    
     public boolean emailExiste(String email){
         String sql = "SELECT 1 FROM Usuarios WHERE email = ?";
         
         try(Connection con = Conexion.getConexion();
-                PreparedStatement insert = con.prepareStatement(sql)){
-            insert.setString(1, email);
+                PreparedStatement ps = con.prepareStatement(sql)){
+            ps.setString(1, email);
             
-            try(ResultSet rs = insert.executeQuery()){
+            try(ResultSet rs = ps.executeQuery()){
                 return rs.next();
             }
         
@@ -103,8 +138,8 @@ public class UsuarioDAO {
                 + "WHERE nombreRol <> 'Administrador'";
         
         try(Connection con = Conexion.getConexion();
-                PreparedStatement insert = con.prepareStatement(sql);
-                ResultSet rs = insert.executeQuery()){
+                PreparedStatement ps = con.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery()){
             while(rs.next()){
                 Rol rol = new Rol(rs.getInt("id_Rol"), rs.getString("nombreRol"));
                 lista.add(rol);
@@ -115,4 +150,5 @@ public class UsuarioDAO {
         
         return lista;
     }
+    
 }

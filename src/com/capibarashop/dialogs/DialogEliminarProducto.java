@@ -4,23 +4,22 @@
  */
 package com.capibarashop.dialogs;
 
-import com.capibarashop.clases.CategoriaDAO;
-import com.capibarashop.clases.Categoria;
 import com.capibarashop.clases.Producto;
 import com.capibarashop.clases.ProductoDAO;
 import com.capibarashop.clases.Usuario;
+import com.capibarashop.clases.Utilidades;
 import java.awt.Image;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.JSpinner;
-import java.util.List;
 
 /**
  *
  * @author Angel Aimar
  */
 public class DialogEliminarProducto extends javax.swing.JDialog {
+    
+    private Utilidades u = new Utilidades();
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(DialogEliminarProducto.class.getName());
 
@@ -75,7 +74,7 @@ public class DialogEliminarProducto extends javax.swing.JDialog {
             }
         });
         jPanel1.add(jBBuscar, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 190, 120, -1));
-        jPanel1.add(jLCapibara, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 40, 120, 120));
+        jPanel1.add(jLCapibara, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 40, 120, 120));
         jPanel1.add(jSIdProducto, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 160, 100, -1));
         jSIdProducto.setModel(new SpinnerNumberModel(0, 0, 999999, 1));
 
@@ -119,6 +118,12 @@ public class DialogEliminarProducto extends javax.swing.JDialog {
         }
         
         if (p == null) {
+            
+            
+            u.generarMensajeGenerico(this, "/com/capibarashop/resources/capibaraNoProductoEncontrado.png",
+                    "¡El producto de ID: " + id + " no existe o no se encontró!",
+                    "No se encontró ningun producto con ese ID, vuelve a intentarlo o verifica bien los IDs de tus productos existentes",
+                    "Buscar Producto", JOptionPane.INFORMATION_MESSAGE, 120, 120);
             JOptionPane.showMessageDialog(this, "No se encontró el producto con ID: " + id);
             return;
         }
@@ -138,13 +143,16 @@ public class DialogEliminarProducto extends javax.swing.JDialog {
 
         if (confirmacion == JOptionPane.YES_OPTION) {
             if (dao.eliminarProducto(p.getId())) {
-                ImageIcon originalIcon = new ImageIcon(getClass().getResource("/com/capibarashop/resources/capibaraEliminateProduct.png"));
-                Image imagen = originalIcon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
-                ImageIcon icono = new ImageIcon(imagen);
-                JOptionPane.showMessageDialog(this, "Producto eliminado exitosamente.", "Eliminado", JOptionPane.INFORMATION_MESSAGE, icono);
+                u.generarMensajeGenerico(this, "/com/capibarashop/resources/capibaraEliminateProduct.png",
+                    "¡Producto eliminado exitosamente!",
+                    "El Producto " + p.getNombre() + "Ha sido eliminado exitosamente",
+                    "Eliminación", JOptionPane.INFORMATION_MESSAGE, 120, 120);
                 dispose();
             } else {
-                JOptionPane.showMessageDialog(this, "No se eliminó el producto", "Error", JOptionPane.ERROR_MESSAGE);
+                u.generarMensajeGenerico(this, "/com/capibarashop/resources/capibaraError.png",
+                    "¡Hubo un error inesperado!",
+                    "No se pudo eliminar el producto",
+                    "Error Inesperado", JOptionPane.ERROR_MESSAGE, 120, 120);
             }
         }
         

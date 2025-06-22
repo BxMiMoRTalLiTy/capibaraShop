@@ -10,7 +10,7 @@ public class Usuario {
     private int id;
     private String usuarioNombre;
     private String contrasena;
-    private int idRol;
+    private Rol rol;
     private String nombre;
     private String email;
     private Date fechaNacimiento;
@@ -20,6 +20,9 @@ public class Usuario {
     
     //usuarioNombre, nombre, contrasena, email, tel, id_rol
     //Constructor
+    public Usuario(){
+    }
+    
     public Usuario(int id, String usuarioNombre, String nombre, String contrasena, String email, Date fechaNacimiento, String tel, int idRol){
         this.id = id;
         this.usuarioNombre = usuarioNombre;
@@ -28,7 +31,7 @@ public class Usuario {
         this.email = email;
         this.fechaNacimiento = fechaNacimiento;
         this.tel = tel;
-        this.idRol = idRol;
+        //this.idRol = idRol;
     }
     
     public Usuario(String usuarioNombre, String nombre, String contrasena, String email, Date fechaNacimiento, String tel, int idRol){
@@ -38,7 +41,7 @@ public class Usuario {
         this.email = email;
         this.fechaNacimiento = fechaNacimiento;
         this.tel = tel;
-        this.idRol = idRol;
+        //this.idRol = idRol;
     }
     
     //Getter y Setters
@@ -55,8 +58,8 @@ public class Usuario {
         return contrasena;
     }
     
-    public int getIdRol(){
-        return idRol;
+    public Rol getRol(){
+        return rol;
     }
     
     public String getNombre(){
@@ -91,8 +94,8 @@ public class Usuario {
         this.contrasena = contrasena;
     }
     
-    public void setIdRol(int idRol){
-        this.idRol = idRol;
+    public void setRol(Rol rol){
+        this.rol = rol;
     }
     
     public void setNombre(String nombre){

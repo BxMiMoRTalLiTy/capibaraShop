@@ -9,12 +9,15 @@ package com.capibarashop.clases;
  * @author Angel Aimar
  */
 public class Rol {
-    private final int id;
-    private final String nombre_Rol;
+    private int id;
+    private String nombre;
+    
+    public Rol(){
+     }
     
     public Rol(int id, String nombre_Rol) {
         this.id = id;
-        this.nombre_Rol = nombre_Rol;
+        this.nombre = nombre_Rol;
     }
     
     public int getId(){
@@ -23,7 +26,15 @@ public class Rol {
     
      @Override
     public String toString() {
-        return nombre_Rol;
+        return nombre;
+    }
+    
+    public void setId(int id){
+        this.id = id;
+    }
+    
+    public void setNombre(String nombre){
+        this.nombre = nombre;
     }
     
 }

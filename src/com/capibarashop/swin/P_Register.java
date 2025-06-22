@@ -4,18 +4,15 @@
  */
 package com.capibarashop.swin;
 
-import com.capibarashop.clases.Conexion;
 import com.capibarashop.clases.Rol;
 import com.capibarashop.clases.Usuario;
 import com.capibarashop.clases.UsuarioDAO;
+import com.capibarashop.clases.Utilidades;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Image;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import java.sql.Date;
@@ -28,7 +25,8 @@ import javax.swing.ImageIcon;
  */
 public class P_Register extends javax.swing.JPanel {
     
-
+    private Utilidades u = new Utilidades();
+    
     /**
      * Creates new form P_Login
      * @throws java.sql.SQLException
@@ -370,16 +368,22 @@ public class P_Register extends javax.swing.JPanel {
         Rol rol = (Rol) jcbRol.getSelectedItem();
         
         // Validaciones
-        if (usuario.isEmpty() || nombre.isEmpty() || pass1.isEmpty() || pass2.isEmpty() || email.isEmpty() || jFechaNacimiento.getDate() == null ||tel.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios.");
+        if (usuario.isEmpty() || nombre.isEmpty() || pass1.isEmpty() || pass2.isEmpty() || email.isEmpty() || 
+                jFechaNacimiento.getDate() == null ||tel.isEmpty()) {
+            
+            u.generarMensajeGenerico(this, "/com/capibarashop/resources/capibaraFaltanCampos.png",
+                    "¡Falta campos!",
+                    "Revisa que campos faltan para agregarlos",
+                    "Registro", JOptionPane.INFORMATION_MESSAGE, 150, 150);
             return;
         }
         
         //Se colocan aqui por si no han colocado alguna variable para que no lance error
         java.util.Date fechaN = jFechaNacimiento.getDate(); //Este es una variable de transicion
         Date fechaNacimiento = new java.sql.Date(fechaN.getTime());
-
+        
         if (!pass1.equals(pass2)) {
+            
             JOptionPane.showMessageDialog(this, "Las contraseñas no coinciden.");
             return;
         }
@@ -398,7 +402,7 @@ public class P_Register extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(this, "Selecciona un rol válido.");
             return;
         }
-
+        
         // Crear el usuario e insertarlo
         Usuario nuevo = new Usuario(usuario, nombre, pass1, email, fechaNacimiento, tel, rol.getId());
 
@@ -421,7 +425,10 @@ public class P_Register extends javax.swing.JPanel {
         
         try {
             if (dao.insertarUsuario(nuevo)) {
-                JOptionPane.showMessageDialog(this, "Registro exitoso.");
+                u.generarMensajeGenerico(this, "/com/capibarashop/resources/capibaraRegistroCorrecto.png",
+                    "¡Felicidades te has registrado correctamente!",
+                    "Felicidades, ya tienes una cuenta aqui en CapibaraShop, disfruta de tu cuenta",
+                    "Registro", JOptionPane.INFORMATION_MESSAGE, 120, 120);
                 
                 this.removeAll();
                 this.setLayout(new BorderLayout());
@@ -431,7 +438,10 @@ public class P_Register extends javax.swing.JPanel {
                 
                 // Puedes regresar al login si quieres aquí
             } else {
-                JOptionPane.showMessageDialog(this, "Error al registrar.");
+                u.generarMensajeGenerico(this, "/com/capibarashop/resources/capibaraError.png",
+                    "¡Hubo un error inesperado!",
+                    "No se pudo realizar el registro correctamente",
+                    "Error Inesperado", JOptionPane.ERROR_MESSAGE, 120, 120);
             }   
         } catch (SQLException ex) {
             System.getLogger(P_Register.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);

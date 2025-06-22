@@ -4,6 +4,15 @@
  */
 package com.capibarashop.clases;
 
+import java.awt.Container;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Image;
+import java.awt.geom.AffineTransform;
+import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author Angel Aimar
@@ -22,5 +31,45 @@ public class Utilidades {
             + "</table>"
             + "</html>";
     }
+    
+    public void generarMensajeGenerico(Container parent, String urlIcono, String tituloTexto, String texto, String tituloJOpcionPane, int tipo, int anchura, int altura){
+        ImageIcon icono = escalarIconoConDPI(urlIcono, anchura, altura);
+        String mensaje = String.format("""
+            <html>
+                <div style='text-align: center;'>
+                    <h2 style='color: #2a4a89;'>%s</h2>
+                    <p>%s</p>
+                </div>
+            </html>
+            """, tituloTexto, texto);
+        JOptionPane.showMessageDialog(parent, mensaje, tituloJOpcionPane, tipo, icono);
+    }    
+    
+    public void generarJOptionPaneImagen(Container parent, String urlIcono, String tituloJOpcionPane, int tipo, int anchura, int altura){
+        ImageIcon icono = escalarIconoConDPI(urlIcono, anchura, altura);
+        JOptionPane.showMessageDialog(parent, "", tituloJOpcionPane, tipo, icono);
+    }  
+    
+    public static ImageIcon escalarIconoConDPI(String path, int anchoBase, int altoBase) {
+        try {
+            ImageIcon original = new ImageIcon(Utilidades.class.getResource(path));
+
+            // Detectar escala DPI
+            GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+            GraphicsConfiguration gc = gd.getDefaultConfiguration();
+            AffineTransform at = gc.getDefaultTransform();
+            double escala = at.getScaleX(); // Ej: 1.25 si está en 125%
+
+            int ancho = (int)(anchoBase * escala);
+            int alto = (int)(altoBase * escala);
+
+            Image imagen = original.getImage().getScaledInstance(ancho, alto, Image.SCALE_SMOOTH);
+            return new ImageIcon(imagen);
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "No se pudo cargar la imagen: " + path, "Error", JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+}
     
 }

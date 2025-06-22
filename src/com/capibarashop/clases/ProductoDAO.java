@@ -14,20 +14,48 @@ import javax.swing.JOptionPane;
  */
 public class ProductoDAO {
     
+    private Producto construirProducto (ResultSet rs) throws SQLException{
+        Producto p = new Producto();
+        
+        p.setId(rs.getInt("id_Producto"));
+        p.setNombre(rs.getString("nombre"));
+        p.setPrecio(rs.getDouble("precio"));
+        p.setDescripcion(rs.getString("descripcion"));
+        p.setStock(rs.getInt("stock"));
+        p.setImagen(rs.getBytes("imagen"));
+
+        CategoriaDAO cDao = new CategoriaDAO();
+        Categoria c = cDao.obtenerCategoria(rs.getInt("id_Categoria"));
+        if (c == null) {
+            throw new SQLException("Categoría no encontrada para ID: " + rs.getInt("id_Categoria"));
+        }
+        p.setCategoria(c);
+
+        UsuarioDAO uDao = new UsuarioDAO();
+        Usuario u = uDao.buscarUsuarioID(rs.getInt("id_Usuario"));
+        if (u == null) {
+            throw new SQLException("Usuario no encontrado para ID: " + rs.getInt("id_Usuario"));
+        }
+        p.setUsuario(u);
+        
+        return p;
+    }
+    
     public boolean insertarProducto(Producto p) throws SQLException{
-        String sql = "INSERT INTO Productos(nombre, precio, descripcion, stock, id_Categoria, id_Usuario)"
-                + "VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Productos(nombre, precio, descripcion, stock, imagen, id_Categoria, id_Usuario)"
+                + "VALUES (?, ?, ?, ?, ?, ?, ?)";
         
         try(Connection con = Conexion.getConexion();
-            PreparedStatement insert = con.prepareStatement(sql)){
-                insert.setString(1, p.getNombre());
-                insert.setDouble(2, p.getPrecio());
-                insert.setString(3, p.getDescripcion());
-                insert.setInt(4, p.getStock());
-                insert.setInt(5, p.getIdCategoria());
-                insert.setInt(6, p.getIdUsuario());
+            PreparedStatement ps = con.prepareStatement(sql)){
+                ps.setString(1, p.getNombre());
+                ps.setDouble(2, p.getPrecio());
+                ps.setString(3, p.getDescripcion());
+                ps.setInt(4, p.getStock());
+                ps.setBytes(5, p.getImagen());
+                ps.setInt(6, p.getCategoria().getId());
+                ps.setInt(7, p.getUsuario().getId());
                 
-                return insert.executeUpdate() > 0;
+                return ps.executeUpdate() > 0;
         }catch(SQLException e){
             e.printStackTrace();
             return false;
@@ -37,12 +65,9 @@ public class ProductoDAO {
     
     public Producto buscarProductoIDAdmin(int idProducto){
         String sql = """
-        SELECT p.id_Producto, p.nombre, p.precio, p.descripcion, p.stock,
-               p.id_Categoria, p.id_Usuario, c.nombre AS categoriaNombre
-        FROM Productos p
-        JOIN Categorias c ON p.id_Categoria = c.id_Categoria
-        WHERE p.id_Producto = ?
-        """;
+                SELECT * FROM Productos
+                WHERE id_Producto = ?
+            """;
         
         try (Connection con = Conexion.getConexion(); PreparedStatement ps = con.prepareStatement(sql)) {
 
@@ -51,16 +76,7 @@ public class ProductoDAO {
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
-                Producto p = new Producto();
-                p.setId(rs.getInt("id_Producto"));
-                p.setNombre(rs.getString("nombre"));
-                p.setPrecio(rs.getDouble("precio"));
-                p.setDescripcion(rs.getString("descripcion"));
-                p.setStock(rs.getInt("stock"));
-                p.setIdCategoria(rs.getInt("id_Categoria"));
-                p.setIdUsuario(rs.getInt("id_Usuario"));
-                p.setNombreCategoria(rs.getString("categoriaNombre"));
-                return p;
+                return construirProducto(rs);
             }
 
         } catch (SQLException e) {
@@ -73,12 +89,9 @@ public class ProductoDAO {
     
     public Producto buscarProductoIDyUsuario(int idProducto, int idUsuario){
         String sql = """
-        SELECT p.id_Producto, p.nombre, p.precio, p.descripcion, p.stock,
-               p.id_Categoria, p.id_Usuario, c.nombre AS categoriaNombre
-        FROM Productos p
-        JOIN Categorias c ON p.id_Categoria = c.id_Categoria
-        WHERE p.id_Producto = ? AND p.id_Usuario = ?
-        """;
+                SELECT * FROM Productos
+                WHERE id_Producto = ? AND id_Usuario = ?
+            """;
         try (Connection con = Conexion.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
@@ -88,15 +101,7 @@ public class ProductoDAO {
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
-                Producto p = new Producto();
-                p.setId(rs.getInt("id_Producto"));
-                p.setNombre(rs.getString("nombre"));
-                p.setPrecio(rs.getDouble("precio"));
-                p.setDescripcion(rs.getString("descripcion"));
-                p.setStock(rs.getInt("stock"));
-                p.setIdCategoria(rs.getInt("id_Categoria"));
-                p.setIdUsuario(rs.getInt("id_Usuario"));
-                return p;
+                return construirProducto(rs);
             }
 
         } catch (SQLException e) {
@@ -111,11 +116,8 @@ public class ProductoDAO {
     public List<Producto> listarProductosPorUsuario(int idUsuario) throws SQLException {
         List<Producto> lista = new ArrayList<>();
         String sql = """
-            SELECT p.id_Producto, p.nombre, p.precio, p.descripcion, p.stock,
-                   p.id_Categoria, p.id_Usuario, c.nombre AS categoriaNombre
-            FROM Productos p
-            JOIN Categorias c ON p.id_Categoria = c.id_Categoria
-            WHERE p.id_Usuario = ?
+            SELECT * FROM Productos
+            WHERE id_Usuario = ?
         """;
 
         try (Connection con = Conexion.getConexion();
@@ -125,16 +127,7 @@ public class ProductoDAO {
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
-                Producto p = new Producto();
-                p.setId(rs.getInt("id_Producto"));
-                p.setNombre(rs.getString("nombre"));
-                p.setPrecio(rs.getDouble("precio"));
-                p.setDescripcion(rs.getString("descripcion"));
-                p.setStock(rs.getInt("stock"));
-                p.setIdCategoria(rs.getInt("id_Categoria"));
-                p.setIdUsuario(rs.getInt("id_Usuario"));
-                p.setNombreCategoria(rs.getString("categoriaNombre"));
-                lista.add(p);
+                lista.add(construirProducto(rs));
             }
         }
 
@@ -144,26 +137,12 @@ public class ProductoDAO {
     //Para el ADMIN
     public List<Producto> listarProductosAdmin() throws SQLException {
         List<Producto> lista = new ArrayList<>();
-        String sql = """
-        SELECT p.id_Producto, p.nombre, p.precio, p.descripcion, p.stock,
-               p.id_Categoria, p.id_Usuario, c.nombre AS categoriaNombre
-        FROM Productos p
-        JOIN Categorias c ON p.id_Categoria = c.id_Categoria
-    """;
+        String sql = "SELECT * FROM Productos";
 
         try (Connection con = Conexion.getConexion(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                Producto p = new Producto();
-                p.setId(rs.getInt("id_Producto"));
-                p.setNombre(rs.getString("nombre"));
-                p.setPrecio(rs.getDouble("precio"));
-                p.setDescripcion(rs.getString("descripcion"));
-                p.setStock(rs.getInt("stock"));
-                p.setIdCategoria(rs.getInt("id_Categoria"));
-                p.setIdUsuario(rs.getInt("id_Usuario"));
-                p.setNombreCategoria(rs.getString("categoriaNombre")); // se añade aquí
-                lista.add(p);
+                lista.add(construirProducto(rs));
             }
         }
 
@@ -187,43 +166,36 @@ public class ProductoDAO {
         }
     }
     
-    public List<Producto> listarProductos() throws SQLException{
-        List<Producto> lista = new ArrayList<>();
-        String sql = "SELECT * FROM Productos";
-        
-        try(Connection con = Conexion.getConexion();
-                PreparedStatement insert = con.prepareStatement(sql);
-                ResultSet rs = insert.executeQuery()){
-            while(rs.next()){
-                Producto p = new Producto();
-                p.setId(rs.getInt("id_Producto"));
-                p.setNombre(rs.getString("nombre"));
-                p.setPrecio(rs.getDouble("precio"));
-                p.setDescripcion(rs.getString("descripcion"));
-                p.setIdCategoria(rs.getInt("id_Categoria"));
-                p.setIdUsuario(rs.getInt("id_Usuario"));
-                
-                lista.add(p);
-            }
-        }catch(SQLException e){
-            e.printStackTrace();
-        }
-        return lista;
-    }
+//    public List<Producto> listarProductos() throws SQLException{
+//        List<Producto> lista = new ArrayList<>();
+//        String sql = "SELECT * FROM Productos";
+//        
+//        try(Connection con = Conexion.getConexion();
+//                PreparedStatement insert = con.prepareStatement(sql);
+//                ResultSet rs = insert.executeQuery()){
+//            while(rs.next()){
+//                lista.add(construirProducto(rs));
+//            }
+//        }catch(SQLException e){
+//            e.printStackTrace();
+//        }
+//        return lista;
+//    }
     
     public boolean actualizarProducto(Producto p){
-        String sql = "UPDATE Productos SET nombre = ?, precio = ?, descripcion = ?, stock = ?,"
+        String sql = "UPDATE Productos SET nombre = ?, precio = ?, descripcion = ?, stock = ?, imagen = ?,"
                 + "id_Categoria = ? WHERE id_Producto = ?";
         try(Connection con = Conexion.getConexion();
-            PreparedStatement insert = con.prepareStatement(sql)){
-                insert.setString(1, p.getNombre());
-                insert.setDouble(2, p.getPrecio());
-                insert.setString(3, p.getDescripcion());
-                insert.setInt(4, p.getStock());
-                insert.setInt(5, p.getIdCategoria());
-                insert.setInt(6, p.getId());
+            PreparedStatement ps = con.prepareStatement(sql)){
+                ps.setString(1, p.getNombre());
+                ps.setDouble(2, p.getPrecio());
+                ps.setString(3, p.getDescripcion());
+                ps.setInt(4, p.getStock());
+                ps.setBytes(5, p.getImagen());
+                ps.setInt(6, p.getCategoria().getId());
+                ps.setInt(7, p.getId());
                 
-                return insert.executeUpdate() > 0;
+                return ps.executeUpdate() > 0;
         }catch(SQLException e){
             e.printStackTrace();
             return false;

@@ -12,6 +12,8 @@ public class Categoria {
     private int id;
     private String nombre;
 
+    public Categoria(){}
+    
     public Categoria(int id, String nombre) {
         this.id = id;
         this.nombre = nombre;
@@ -24,4 +26,26 @@ public class Categoria {
     public String toString() {
         return nombre; // para que se vea bien en el JComboBox
     }
+    
+    public void setId(int id){
+        this.id = id;
+    }
+    
+    public void setNombre(String nombre){
+        this.nombre = nombre;
+    }
+    
+    @Override
+    public boolean equals(Object obj){
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Categoria other = (Categoria) obj;
+        return this.id == other.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(id);
+    }
+    
 }

@@ -4,16 +4,18 @@
  */
 package com.capibarashop.swin;
 
-import com.capibarashop.clases.CategoriaDAO;
 import com.capibarashop.clases.Producto;
 import com.capibarashop.clases.ProductoDAO;
 import com.capibarashop.clases.Usuario;
+import com.capibarashop.clases.Utilidades;
+import com.capibarashop.dialogs.DialogActualizarProductoBuscar;
 import com.capibarashop.dialogs.DialogAgregarProducto;
 import com.capibarashop.dialogs.DialogEliminarProducto;
-import java.awt.Image;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.sql.SQLException;
 import java.util.List;
-import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 /**
@@ -22,6 +24,8 @@ import javax.swing.JOptionPane;
  */
 public class P_ProductosAdmin extends javax.swing.JPanel {
     
+    
+    private Utilidades u = new Utilidades();
     /**
      * Creates new form P_ProductosAdmin
      */
@@ -78,7 +82,7 @@ public class P_ProductosAdmin extends javax.swing.JPanel {
         jTPaneProductos.setEditable(false);
 
         jBActualizarL.setFont(new java.awt.Font("STXinwei", 0, 24)); // NOI18N
-        jBActualizarL.setText("Actualizar Lista");
+        jBActualizarL.setText("Actualizar Un Producto");
         jBActualizarL.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jBActualizarLActionPerformed(evt);
@@ -108,9 +112,9 @@ public class P_ProductosAdmin extends javax.swing.JPanel {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jBAgregar)
-                .addGap(126, 126, 126)
+                .addGap(76, 76, 76)
                 .addComponent(jBEliminar)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 127, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 89, Short.MAX_VALUE)
                 .addComponent(jBActualizarL)
                 .addContainerGap())
         );
@@ -200,14 +204,19 @@ public class P_ProductosAdmin extends javax.swing.JPanel {
             List<Producto> productos;
             if(Usuario.getUsuarioActual().getId() == 1){
                 productos = dao.listarProductosAdmin();
+//                DialogActualizarProductoBuscar dialog = new DialogActualizarProductoBuscar(null, true);
+//                dialog.setVisible(true);
+                listarMisProductosAdmin(productos);
             }
             else{
                productos = dao.listarProductosPorUsuario(Usuario.getUsuarioActual().getId());
+               listarMisProductos(productos);
             }
-            
-            listarMisProductos(productos);
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Error al recargar productos.");
+            u.generarMensajeGenerico(this, "/com/capibarashop/resources/capibaraError.png",
+                    "¡Hubo un error inesperado!",
+                    "Error al Cargar Productos: " + e.getMessage(),
+                    "Error Inesperado", JOptionPane.ERROR_MESSAGE, 120, 120);
         }
     }//GEN-LAST:event_jBActualizarLActionPerformed
 
@@ -222,14 +231,17 @@ public class P_ProductosAdmin extends javax.swing.JPanel {
             List<Producto> productos;
             if(Usuario.getUsuarioActual().getId() == 1){
                 productos = dao.listarProductosAdmin();
+                listarMisProductosAdmin(productos);
             }
             else{
                productos = dao.listarProductosPorUsuario(Usuario.getUsuarioActual().getId());
+               listarMisProductos(productos);
             }
-            
-            listarMisProductos(productos);
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Error al recargar productos.");
+            u.generarMensajeGenerico(this, "/com/capibarashop/resources/capibaraError.png",
+                    "¡Hubo un error inesperado!",
+                    "Error al Cargar Productos: " + e.getMessage(),
+                    "Error Inesperado", JOptionPane.ERROR_MESSAGE, 120, 120);
         }
     }//GEN-LAST:event_jBAgregarActionPerformed
 
@@ -242,20 +254,25 @@ public class P_ProductosAdmin extends javax.swing.JPanel {
         
         try {
             List<Producto> productos;
-            if(Usuario.getUsuarioActual().getId() == 1){
+            if(Usuario.getUsuarioActual().getRol().toString().equalsIgnoreCase("Administrador")){
                 productos = dao.listarProductosAdmin();
+                listarMisProductosAdmin(productos);
             }
             else{
                productos = dao.listarProductosPorUsuario(Usuario.getUsuarioActual().getId());
+               listarMisProductos(productos);
             }
             
-            listarMisProductos(productos);
+            
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Error al recargar productos.");
+            u.generarMensajeGenerico(this, "/com/capibarashop/resources/capibaraError.png",
+                    "¡Hubo un error inesperado!",
+                    "Error al mostrar el dialogo de borrado: " + e.getMessage(),
+                    "Error Inesperado", JOptionPane.ERROR_MESSAGE, 120, 120);
         }
         
     }//GEN-LAST:event_jBEliminarActionPerformed
-
+    
     public void listarMisProductos(List<Producto> productos){
         StringBuilder sb = new StringBuilder();
         
@@ -309,6 +326,7 @@ public class P_ProductosAdmin extends javax.swing.JPanel {
                             <th>Stock</th>
                             <th>Descripción</th>
                             <th>Categoría</th>
+                            <th>Imagen</th>
                         </tr>
                   """);
         
@@ -319,7 +337,16 @@ public class P_ProductosAdmin extends javax.swing.JPanel {
             sb.append("<td>").append(p.getPrecio()).append("</td>");
             sb.append("<td>").append(p.getStock()).append("</td>");
             sb.append("<td> <div class=\"desc\">").append(p.getDescripcion()).append(" </div> </td>");
-            sb.append("<td>").append(p.getNombreCategoria()).append("</td>");
+            String nombreCategoria = (p.getCategoria() != null) ? p.getCategoria().toString() : "Sin categoría";
+            sb.append("<td>").append(nombreCategoria).append("</td>");
+            
+            String imagenURL = guardarImagenTemporal(p.getImagen(), p.getId());
+            if (imagenURL != null) {
+                sb.append("<td><img src='").append(imagenURL).append("' width='80' height='80'/></td>");
+            } else {
+                sb.append("<td>Sin imagen</td>");
+            }
+            
             sb.append("</tr>");
         }
         
@@ -333,6 +360,112 @@ public class P_ProductosAdmin extends javax.swing.JPanel {
         jTPaneProductos.setText(sb.toString());
         jTPaneProductos.setCaretPosition(0); // Regresa al inicio visual
     }
+    
+    public void listarMisProductosAdmin(List<Producto> productos){
+        StringBuilder sb = new StringBuilder();
+        
+        sb.append("""
+                  <html>
+                        <head>
+                          <style>
+                            h1 {
+                                text-align: center;
+                                color: #4273b9;
+                            }
+                            table, th, td {
+                                border: 1px solid gray;
+                                border-collapse: collapse;
+                            }
+                            th {
+                                background-color: #2a4a89;
+                                color: white;
+                            }
+                            td {
+                                padding: 5px;
+                                max-width: 200px;
+                                word-wrap: break-word;
+                                white-space: normal;
+                                overflow-wrap: break-word;
+                                word-break: break-all;
+                                text-align: left;
+                                vertical-align: top;
+                            }
+                            table {
+                                width: 100%;
+                            }
+                  
+                            .desc {
+                              max-height: 60px;
+                              overflow-y: auto;
+                              overflow-x: hidden;
+                              word-wrap: break-word;
+                              white-space: normal;
+                            }
+                            
+                          </style>
+                        </head>
+                    <body>
+                    <h1>Mis Productos</h1>
+                    <table>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Precio</th>
+                            <th>Stock</th>
+                            <th>Descripción</th>
+                            <th>Categoría</th>
+                            <th>Imagen</th>
+                            <th>ID Usuario</th>
+                        </tr>
+                  """);
+        
+        for(Producto p : productos){
+            sb.append("<tr>");
+            sb.append("<td>").append(p.getId()).append("</td>");
+            sb.append("<td>").append(p.getNombre()).append("</td>");
+            sb.append("<td>").append(p.getPrecio()).append("</td>");
+            sb.append("<td>").append(p.getStock()).append("</td>");
+            sb.append("<td> <div class=\"desc\">").append(p.getDescripcion()).append(" </div> </td>");
+            String nombreCategoria = (p.getCategoria() != null) ? p.getCategoria().toString() : "Sin categoría";
+            sb.append("<td>").append(nombreCategoria).append("</td>");
+            
+            String imagenURL = guardarImagenTemporal(p.getImagen(), p.getId());
+            if (imagenURL != null) {
+                sb.append("<td><img src='").append(imagenURL).append("' width='80' height='80'/></td>");
+            } else {
+                sb.append("<td>Sin imagen</td>");
+            }
+            sb.append("<td>").append(p.getUsuario().getId()).append("</td>");
+            
+            sb.append("</tr>");
+        }
+        
+        sb.append("""
+                </table>
+            </body>
+        </html>
+        """);
+        
+        jTPaneProductos.setContentType("text/html");
+        jTPaneProductos.setText(sb.toString());
+        jTPaneProductos.setCaretPosition(0); // Regresa al inicio visual
+    }
+    
+    
+    private String guardarImagenTemporal(byte[] datosImagen, int idProducto) {
+        try {
+            File tempDir = new File("temp/imagenes");
+            if (!tempDir.exists()) tempDir.mkdirs();
+
+            File imagenFile = new File(tempDir, "producto_" + idProducto + ".png");
+            Files.write(imagenFile.toPath(), datosImagen);
+            return imagenFile.toURI().toURL().toString(); // Ruta accesible por HTML
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jBActualizarL;

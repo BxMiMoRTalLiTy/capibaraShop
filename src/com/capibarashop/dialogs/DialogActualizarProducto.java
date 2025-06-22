@@ -9,20 +9,30 @@ import com.capibarashop.clases.Categoria;
 import com.capibarashop.clases.Producto;
 import com.capibarashop.clases.ProductoDAO;
 import com.capibarashop.clases.Usuario;
+import com.capibarashop.clases.Utilidades;
 import java.awt.Image;
+import java.io.IOException;
 import java.sql.SQLException;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.JSpinner;
 import java.util.List;
+import javax.swing.JFileChooser;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.io.File;
+import java.nio.file.Files;
 
 /**
  *
  * @author Angel Aimar
  */
 public class DialogActualizarProducto extends javax.swing.JDialog {
+    
+    private Utilidades u = new Utilidades();
+    private byte[] imagenSeleccionada;
+    private Producto productoOriginal;
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(DialogActualizarProducto.class.getName());
 
@@ -31,13 +41,17 @@ public class DialogActualizarProducto extends javax.swing.JDialog {
      * @param parent
      * @param modal
      */
-    public DialogActualizarProducto(java.awt.Frame parent, boolean modal) {
+    public DialogActualizarProducto(java.awt.Frame parent, boolean modal, Producto producto) {
         super(parent, modal);
+        this.productoOriginal = producto;
         initComponents();
+
         ImageIcon icon = new ImageIcon(getClass().getResource("/com/capibarashop/resources/capibaraAddProduct.png"));
-        Image img = icon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH); // ← Ajusta tamaño aquí
+        Image img = icon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
         jLCapibara.setIcon(new ImageIcon(img));
-        cargarCategorias();
+
+        cargarCategorias(); // Cargar primero
+        cargarDatosProducto(); // Luego insertar datos
     }
 
     /**
@@ -64,6 +78,11 @@ public class DialogActualizarProducto extends javax.swing.JDialog {
         jLCapibara = new javax.swing.JLabel();
         jSStock = new javax.swing.JSpinner();
         jSPrecio = new javax.swing.JSpinner();
+        jBCancelar = new javax.swing.JButton();
+        jLImagen = new javax.swing.JLabel();
+        jLImagenOpcional = new javax.swing.JLabel();
+        jLImagenMostrar = new javax.swing.JLabel();
+        jBSeleccionarImagen = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -78,7 +97,7 @@ public class DialogActualizarProducto extends javax.swing.JDialog {
         jLCategoria.setFont(new java.awt.Font("STXinwei", 0, 18)); // NOI18N
         jLCategoria.setForeground(new java.awt.Color(0, 0, 0));
         jLCategoria.setText("Categoria:");
-        jPanel1.add(jLCategoria, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 320, -1, -1));
+        jPanel1.add(jLCategoria, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 420, -1, -1));
 
         jLNombre.setFont(new java.awt.Font("STXinwei", 0, 18)); // NOI18N
         jLNombre.setForeground(new java.awt.Color(0, 0, 0));
@@ -98,15 +117,16 @@ public class DialogActualizarProducto extends javax.swing.JDialog {
         jLDescripcion.setFont(new java.awt.Font("STXinwei", 0, 18)); // NOI18N
         jLDescripcion.setForeground(new java.awt.Color(0, 0, 0));
         jLDescripcion.setText("Descripcion:");
-        jPanel1.add(jLDescripcion, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 180, -1, -1));
+        jPanel1.add(jLDescripcion, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 280, -1, -1));
 
         jCBCategoria.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jCBCategoriaActionPerformed(evt);
             }
         });
-        jPanel1.add(jCBCategoria, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 316, 170, 30));
-        jPanel1.add(jTFNombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 80, 280, -1));
+        jPanel1.add(jCBCategoria, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 420, 190, 30));
+        jPanel1.add(jTFNombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 80, 270, -1));
+        jTFNombre.setText(productoOriginal.getNombre());
 
         jTADescripcion.setColumns(20);
         jTADescripcion.setLineWrap(true);
@@ -116,7 +136,9 @@ public class DialogActualizarProducto extends javax.swing.JDialog {
         jScrollPane1.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         jScrollPane1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 
-        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 180, 250, 130));
+        jTADescripcion.setText(productoOriginal.getDescripcion());
+
+        jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 280, 250, 130));
 
         jBGuardar.setFont(new java.awt.Font("STXinwei", 0, 24)); // NOI18N
         jBGuardar.setText("Guardar");
@@ -125,10 +147,10 @@ public class DialogActualizarProducto extends javax.swing.JDialog {
                 jBGuardarActionPerformed(evt);
             }
         });
-        jPanel1.add(jBGuardar, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 350, 120, -1));
+        jPanel1.add(jBGuardar, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 460, 130, -1));
         jPanel1.add(jLCapibara, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 50, 50));
         jPanel1.add(jSStock, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 140, 110, -1));
-        jSStock.setModel(new SpinnerNumberModel(0, 0, 10000, 1));
+        jSStock.setModel(new SpinnerNumberModel(productoOriginal.getStock(), 0, 10000, 1));
 
         jSPrecio.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
@@ -136,9 +158,40 @@ public class DialogActualizarProducto extends javax.swing.JDialog {
             }
         });
         jPanel1.add(jSPrecio, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 110, 140, -1));
-        jSPrecio.setModel(new SpinnerNumberModel(0, 0.00, 999999.99, 0.01));
+        jSPrecio.setModel(new SpinnerNumberModel(productoOriginal.getPrecio(), 0.00, 999999.99, 0.01));
         JSpinner.NumberEditor editor = new JSpinner.NumberEditor(jSPrecio, "$#,##0.00");
         jSPrecio.setEditor(editor);
+
+        jBCancelar.setFont(new java.awt.Font("STXinwei", 0, 18)); // NOI18N
+        jBCancelar.setText("Cancelar");
+        jBCancelar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jBCancelarActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jBCancelar, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 460, 110, -1));
+
+        jLImagen.setFont(new java.awt.Font("STXinwei", 0, 18)); // NOI18N
+        jLImagen.setForeground(new java.awt.Color(0, 0, 0));
+        jLImagen.setText("Imagen:");
+        jPanel1.add(jLImagen, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 180, -1, -1));
+
+        jLImagenOpcional.setFont(new java.awt.Font("STXinwei", 0, 18)); // NOI18N
+        jLImagenOpcional.setForeground(new java.awt.Color(0, 0, 0));
+        jLImagenOpcional.setText("(Opcional)");
+        jPanel1.add(jLImagenOpcional, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 180, -1, -1));
+
+        jLImagenMostrar.setFont(new java.awt.Font("STXinwei", 0, 18)); // NOI18N
+        jLImagenMostrar.setForeground(new java.awt.Color(0, 0, 0));
+        jPanel1.add(jLImagenMostrar, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 170, 100, 100));
+
+        jBSeleccionarImagen.setText("Seleccionar Imagen");
+        jBSeleccionarImagen.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jBSeleccionarImagenActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jBSeleccionarImagen, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 210, -1, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -148,66 +201,91 @@ public class DialogActualizarProducto extends javax.swing.JDialog {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jBGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBGuardarActionPerformed
-        // TODO add your handling code here:
-        
-        Categoria categoria = (Categoria) jCBCategoria.getSelectedItem();
-        
-        if (jTFNombre.getText().isBlank()) {
-            JOptionPane.showMessageDialog(this, "El nombre es obligatorio");
-            return;
+    
+    private void cargarDatosProducto() {
+        jTFNombre.setText(productoOriginal.getNombre());
+        jSPrecio.setValue(productoOriginal.getPrecio());
+        jSStock.setValue(productoOriginal.getStock());
+        jTADescripcion.setText(productoOriginal.getDescripcion());
+        imagenSeleccionada = productoOriginal.getImagen();
+
+        if (imagenSeleccionada != null) {
+            ImageIcon icono = new ImageIcon(imagenSeleccionada);
+            Image img = icono.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+            jLImagenMostrar.setIcon(new ImageIcon(img));
         }
-        
-        if(((Integer) jSStock.getValue() <= 0)){
-            JOptionPane.showMessageDialog(this, "El Stock tiene que ser mayor a 0");
-            return;
+
+        // Seleccionar categoría actual
+        for (int i = 0; i < jCBCategoria.getItemCount(); i++) {
+            Categoria c = jCBCategoria.getItemAt(i);
+            if (c.getId() == productoOriginal.getCategoria().getId()) {
+                jCBCategoria.setSelectedIndex(i);
+                break;
+            }
         }
-        
-        if(((Double) jSPrecio.getValue() <= 0.00)){
-            JOptionPane.showMessageDialog(this, "El Precio tiene que ser mayor a $0.00");
-            return;
+    }
+
+    private void seleccionarImagen() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Seleccionar imagen del producto");
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Imágenes", "jpg", "jpeg", "png");
+        fileChooser.setFileFilter(filter);
+
+        int resultado = fileChooser.showOpenDialog(this);
+        if (resultado == JFileChooser.APPROVE_OPTION) {
+            try {
+                imagenSeleccionada = Files.readAllBytes(fileChooser.getSelectedFile().toPath());
+                ImageIcon icono = new ImageIcon(imagenSeleccionada);
+                Image imagen = icono.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+                jLImagenMostrar.setIcon(new ImageIcon(imagen));
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this, "No se pudo cargar la imagen: " + ex.getMessage(),
+                        "Error de imagen", JOptionPane.ERROR_MESSAGE);
+            }
         }
-        
-        if(jTADescripcion.getText().isBlank()){
-            JOptionPane.showMessageDialog(this, "El Campo Descripción es obligatorio");
-            return;
-        }
-        
-        if (categoria == null || categoria.getId() == 0) {
-            JOptionPane.showMessageDialog(this, "Por favor selecciona una categoría válida.");
-            return;
-        }
-        
+    }
+
+    private void guardarCambios() {
         String nombre = jTFNombre.getText();
         Double precio = (Double) jSPrecio.getValue();
         int stock = (Integer) jSStock.getValue();
         String descripcion = jTADescripcion.getText();
-        
-        //int id, String nombre, double precio, String descripcion, int stock, int idCategoria, int idUsuario
-        if(Usuario.getUsuarioActual().getId() !=0 ){
-            Producto productoNuevo = new Producto(nombre, precio, descripcion, stock, categoria.getId(), Usuario.getUsuarioActual().getId());
-        
-            ProductoDAO dao = new ProductoDAO();
-            try {
-                if (dao.insertarProducto(productoNuevo)) {
-                    JOptionPane.showMessageDialog(this, "Producto agregado correctamente.");
-                    dispose(); // Cierra el diálogo
-                } else {
-                    JOptionPane.showMessageDialog(this, "No se pudo agregar el producto.");
-                }
-            } catch (SQLException e) {
-                JOptionPane.showMessageDialog(this, "Error al agregar producto: " + e.getMessage());
-            }
+        Categoria categoria = (Categoria) jCBCategoria.getSelectedItem();
+
+        if (nombre.isBlank() || descripcion.isBlank() || categoria == null || categoria.getId() == 0) {
+            u.generarMensajeGenerico(this, "/com/capibarashop/resources/capibaraFaltanCampos.png",
+                "¡Faltan campos!", "Por favor llena todos los campos.", "Error", JOptionPane.ERROR_MESSAGE, 120, 120);
+            return;
         }
-        else{
-            JOptionPane.showMessageDialog(this, "Error al agregar producto");
+
+        productoOriginal.setNombre(nombre);
+        productoOriginal.setPrecio(precio);
+        productoOriginal.setStock(stock);
+        productoOriginal.setDescripcion(descripcion);
+        productoOriginal.setCategoria(categoria);
+        productoOriginal.setImagen(imagenSeleccionada);
+
+        ProductoDAO dao = new ProductoDAO();
+        if (dao.actualizarProducto(productoOriginal)) {
+            u.generarMensajeGenerico(this, "/com/capibarashop/resources/capibaraProductoActualizado.png",
+                "¡Actualización exitosa!", "El producto fue actualizado correctamente.", "Actualizado", JOptionPane.INFORMATION_MESSAGE, 120, 120);
+            dispose();
+        } else {
+            u.generarMensajeGenerico(this, "/com/capibarashop/resources/capibaraError.png",
+                "¡Error al actualizar!", "Ocurrió un error al guardar los cambios.", "Error", JOptionPane.ERROR_MESSAGE, 120, 120);
         }
+    }
+ 
+    private void jBGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBGuardarActionPerformed
+        // TODO add your handling code here:
+        guardarCambios();
+        
     }//GEN-LAST:event_jBGuardarActionPerformed
 
     private void cargarCategorias(){
@@ -216,7 +294,7 @@ public class DialogActualizarProducto extends javax.swing.JDialog {
 
         jCBCategoria.removeAllItems();
         jCBCategoria.addItem(new Categoria(0, "Selecciona una categoría..."));
-
+        
         for (Categoria c : categorias) {
             jCBCategoria.addItem(c);
         }
@@ -234,13 +312,30 @@ public class DialogActualizarProducto extends javax.swing.JDialog {
         // TODO add your handling code here:
     }//GEN-LAST:event_jCBCategoriaActionPerformed
 
+    private void jBCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBCancelarActionPerformed
+        // TODO add your handling code here:
+        this.dispose();
+    }//GEN-LAST:event_jBCancelarActionPerformed
+
+    private void jBSeleccionarImagenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBSeleccionarImagenActionPerformed
+        // TODO add your handling code here:
+        seleccionarImagen();
+        
+    }//GEN-LAST:event_jBSeleccionarImagenActionPerformed
+
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jBCancelar;
     private javax.swing.JButton jBGuardar;
+    private javax.swing.JButton jBSeleccionarImagen;
     private javax.swing.JComboBox<Categoria> jCBCategoria;
     private javax.swing.JLabel jLCapibara;
     private javax.swing.JLabel jLCategoria;
     private javax.swing.JLabel jLDescripcion;
+    private javax.swing.JLabel jLImagen;
+    private javax.swing.JLabel jLImagenMostrar;
+    private javax.swing.JLabel jLImagenOpcional;
     private javax.swing.JLabel jLNombre;
     private javax.swing.JLabel jLPrecio;
     private javax.swing.JLabel jLStock;

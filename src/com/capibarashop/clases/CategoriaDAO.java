@@ -19,21 +19,22 @@ public class CategoriaDAO {
     
     
     public Categoria obtenerCategoria(int id){
-        String sql = "SELECT id_Categoria, nombre FROM Categorias";
+        String sql = "SELECT * FROM Categorias WHERE id_Categoria = ?";
 
         try (Connection con = Conexion.getConexion();
-             PreparedStatement ps = con.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-
-            Categoria c = new Categoria(
+             PreparedStatement ps = con.prepareStatement(sql);) {
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            
+          if (rs.next()) {
+                return new Categoria(
                     rs.getInt("id_Categoria"),
                     rs.getString("nombre")
-            );
-            
-          return c;
+                );
+            }
 
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error al cargar categorías: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Sin categoria: " + e.getMessage());
         }
         
         return null;

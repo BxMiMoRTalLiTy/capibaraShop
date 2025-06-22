@@ -98,7 +98,7 @@
         <Component class="javax.swing.JLabel" name="jLCapibara">
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
-              <AbsoluteConstraints x="60" y="40" width="120" height="120"/>
+              <AbsoluteConstraints x="50" y="40" width="120" height="120"/>
             </Constraint>
           </Constraints>
         </Component>

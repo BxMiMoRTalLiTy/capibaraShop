@@ -30,22 +30,6 @@ public class Panel_Login_Register extends javax.swing.JPanel {
         initComponents();
         cambiarContenido(panelContenido, 1);
     }
-
-//    public static void cambiarContenido(Container parent, int seleccionarCual) throws SQLException{
-//        parent.removeAll();
-//        if(seleccionarCual == 1){
-//            parent.setLayout(new BorderLayout());
-//            parent.add(new P_Login(), BorderLayout.CENTER); // ← tu panel de logeo
-//            parent.revalidate();
-//            parent.repaint();
-//        }
-//        else if(seleccionarCual == 2){
-//            parent.setLayout(new BorderLayout());
-//            parent.add(new P_Register(), BorderLayout.CENTER); // ← tu panel de registro
-//            parent.revalidate();
-//            parent.repaint();
-//        }
-//    }
     
     public static void cambiarContenido(Container parent, int seleccionarCual) throws SQLException {
         parent.removeAll();
