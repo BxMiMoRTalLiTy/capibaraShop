@@ -23,7 +23,7 @@ public class Usuario {
     public Usuario(){
     }
     
-    public Usuario(int id, String usuarioNombre, String nombre, String contrasena, String email, Date fechaNacimiento, String tel, int idRol){
+    public Usuario(int id, String usuarioNombre, String nombre, String contrasena, String email, Date fechaNacimiento, String tel, Rol rol){
         this.id = id;
         this.usuarioNombre = usuarioNombre;
         this.nombre = nombre;
@@ -31,17 +31,17 @@ public class Usuario {
         this.email = email;
         this.fechaNacimiento = fechaNacimiento;
         this.tel = tel;
-        //this.idRol = idRol;
+        this.rol = rol;
     }
     
-    public Usuario(String usuarioNombre, String nombre, String contrasena, String email, Date fechaNacimiento, String tel, int idRol){
+    public Usuario(String usuarioNombre, String nombre, String contrasena, String email, Date fechaNacimiento, String tel, Rol rol){
         this.usuarioNombre = usuarioNombre;
         this.nombre = nombre;
         this.contrasena = contrasena; 
         this.email = email;
         this.fechaNacimiento = fechaNacimiento;
         this.tel = tel;
-        //this.idRol = idRol;
+        this.rol = rol;
     }
     
     //Getter y Setters

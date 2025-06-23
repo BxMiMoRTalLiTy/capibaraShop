@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package com.capibarashop.swin;
+package com.capibarashop.swing;
 
 import com.capibarashop.clases.Usuario;
 import com.capibarashop.clases.UsuarioDAO;
@@ -238,7 +238,8 @@ public class P_Login extends javax.swing.JPanel {
                     
                     main.setContentPane(new P_ProductosAdmin());
                     main.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                    main.setSize(890, 600);
+                    main.setSize(890, 700);
+                    main.setLocationRelativeTo(null);
                     main.setVisible(true);
                 }
                 else if(rol.equalsIgnoreCase("Cliente")){

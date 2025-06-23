@@ -4,7 +4,9 @@
  */
 package com.capibarashop.main;
 
-import com.capibarashop.swin.Panel_Login_Register;
+import com.capibarashop.swing.Panel_Login_Register;
+import com.formdev.flatlaf.FlatLightLaf;
+import com.sun.tools.javac.Main;
 import java.awt.Color;
 import java.sql.SQLException;
 import javax.swing.JFrame;
@@ -37,7 +39,7 @@ public class Frame_Main extends javax.swing.JFrame {
 
         panelPantalla = new javax.swing.JPanel();
         try {
-            panel_Login_Register1 = new com.capibarashop.swin.Panel_Login_Register();
+            panel_Login_Register1 = new com.capibarashop.swing.Panel_Login_Register();
         } catch (java.sql.SQLException e1) {
             e1.printStackTrace();
         }
@@ -50,13 +52,11 @@ public class Frame_Main extends javax.swing.JFrame {
             panelPantallaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelPantallaLayout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(panel_Login_Register1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(panel_Login_Register1, javax.swing.GroupLayout.PREFERRED_SIZE, 890, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         panelPantallaLayout.setVerticalGroup(
             panelPantallaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelPantallaLayout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(panel_Login_Register1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addComponent(panel_Login_Register1, javax.swing.GroupLayout.DEFAULT_SIZE, 700, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -95,19 +95,29 @@ public class Frame_Main extends javax.swing.JFrame {
         //</editor-fold>
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame("Capibara Shop");
+            
             try {
-                frame.setContentPane(new Panel_Login_Register());
-            } catch (SQLException ex) {
-                System.getLogger(Frame_Main.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+                UIManager.setLookAndFeel(new FlatLightLaf()); // Cambia por FlatDarkLaf si quieres
+            } catch (Exception ex) {
+                System.err.println("No se pudo aplicar FlatLaf");
             }
-            frame.pack();
-            frame.setLocationRelativeTo(null);
-            frame.setVisible(true);
+
+            SwingUtilities.invokeLater(() -> {
+                try {
+                    frame.setContentPane(new Panel_Login_Register());
+                } catch (SQLException ex) {
+                    System.getLogger(Frame_Main.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+                }
+                frame.pack();
+                frame.setLocationRelativeTo(null);
+                frame.setVisible(true);
+            });
+            
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel panelPantalla;
-    private com.capibarashop.swin.Panel_Login_Register panel_Login_Register1;
+    private com.capibarashop.swing.Panel_Login_Register panel_Login_Register1;
     // End of variables declaration//GEN-END:variables
 }

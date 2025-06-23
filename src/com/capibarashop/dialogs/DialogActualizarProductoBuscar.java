@@ -91,13 +91,11 @@ public class DialogActualizarProductoBuscar extends javax.swing.JDialog {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 210, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 259, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE)
         );
 
         pack();
@@ -122,7 +120,6 @@ public class DialogActualizarProductoBuscar extends javax.swing.JDialog {
                     "¡El producto de ID: " + id + " no existe o no se encontró!",
                     "No se encontró ningun producto con ese ID, vuelve a intentarlo o verifica bien los IDs de tus productos existentes",
                     "Buscar Producto", JOptionPane.INFORMATION_MESSAGE, 120, 120);
-            JOptionPane.showMessageDialog(this, "No se encontró el producto con ID: " + id);
             return;
         }
         

@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package com.capibarashop.swin;
+package com.capibarashop.swing;
 
 import com.capibarashop.clases.Rol;
 import com.capibarashop.clases.Usuario;
@@ -33,6 +33,10 @@ public class P_Register extends javax.swing.JPanel {
      */
     public P_Register() throws SQLException {
         initComponents();
+        
+        Utilidades.aplicarScrollCombo(jcbRol);
+        
+        
         cargarRoles();
         ImageIcon icon = new ImageIcon(getClass().getResource("/com/capibarashop/resources/capibara.png"));
         Image img = icon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH); // ← Ajusta tamaño aquí
@@ -348,6 +352,8 @@ public class P_Register extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     
+    
+    
     private void txtUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtUserActionPerformed
         // ODO add your handling code here:
         txtNombre.requestFocusInWindow();
@@ -404,7 +410,7 @@ public class P_Register extends javax.swing.JPanel {
         }
         
         // Crear el usuario e insertarlo
-        Usuario nuevo = new Usuario(usuario, nombre, pass1, email, fechaNacimiento, tel, rol.getId());
+        Usuario nuevo = new Usuario(usuario, nombre, pass1, email, fechaNacimiento, tel, rol);
 
         UsuarioDAO dao = new UsuarioDAO();
 

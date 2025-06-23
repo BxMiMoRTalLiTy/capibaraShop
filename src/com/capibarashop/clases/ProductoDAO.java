@@ -113,17 +113,29 @@ public class ProductoDAO {
     
     
     //Para cualquier usuario
-    public List<Producto> listarProductosPorUsuario(int idUsuario) throws SQLException {
+    public List<Producto> listarProductosPorUsuario() throws SQLException {
         List<Producto> lista = new ArrayList<>();
-        String sql = """
-            SELECT * FROM Productos
-            WHERE id_Usuario = ?
-        """;
+        
+        boolean usuario = Usuario.getUsuarioActual().getRol().toString().equalsIgnoreCase("Administrador");
+        String sql;
+        
+        if(usuario){
+            sql = "SELECT * FROM Productos";
+        }
+        else{
+            sql = """
+                SELECT * FROM Productos
+                WHERE id_Usuario = ?
+            """;
+        }
 
         try (Connection con = Conexion.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
-
-            ps.setInt(1, idUsuario);
+            
+            if(!usuario){
+                ps.setInt(1, Usuario.getUsuarioActual().getId());
+            }
+            
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
@@ -135,19 +147,19 @@ public class ProductoDAO {
     }
     
     //Para el ADMIN
-    public List<Producto> listarProductosAdmin() throws SQLException {
-        List<Producto> lista = new ArrayList<>();
-        String sql = "SELECT * FROM Productos";
-
-        try (Connection con = Conexion.getConexion(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
-
-            while (rs.next()) {
-                lista.add(construirProducto(rs));
-            }
-        }
-
-    return lista;
-}
+//    public List<Producto> listarProductosAdmin() throws SQLException {
+//        List<Producto> lista = new ArrayList<>();
+//        String sql = "SELECT * FROM Productos";
+//
+//        try (Connection con = Conexion.getConexion(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+//
+//            while (rs.next()) {
+//                lista.add(construirProducto(rs));
+//            }
+//        }
+//
+//        return lista;
+//    }
     
     public boolean eliminarProducto(int idProducto){
         String sql = "DELETE FROM Productos WHERE id_Producto = ?";
@@ -164,6 +176,74 @@ public class ProductoDAO {
             JOptionPane.showMessageDialog(null, "Error al eliminar producto: " + e.getMessage());
             return false;
         }
+    }
+    
+    public List<Producto> listarProductosPorCategoria(int idCategoria) throws SQLException {
+        List<Producto> lista = new ArrayList<>();
+        
+        //boolean usuario = Usuario.getUsuarioActual().getRol().toString().equalsIgnoreCase("Administrador");
+        String sql;
+        
+        //if(usuario){
+            sql = """
+                SELECT * FROM Productos
+                WHERE id_Categoria = ?
+            """;
+        //}
+//        else{
+//            sql = """
+//                SELECT * FROM Productos
+//                WHERE id_Categoria = ? AND id_Usuario = ?
+//            """;
+//        }
+
+        try (Connection con = Conexion.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            
+            
+            ps.setInt(1, idCategoria);
+            //if(!usuario){
+                //ps.setInt(2, Usuario.getUsuarioActual().getId());
+            //}
+            
+            
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                lista.add(construirProducto(rs));
+            }
+        }
+        
+        return lista;
+    }
+    
+    public Map<Categoria, Integer> contarProductosPorCategoria() throws SQLException {
+        Map<Categoria, Integer> conteo = new LinkedHashMap<>();
+
+        String sql = """
+            SELECT c.id_Categoria, c.nombre, COUNT(p.id_Categoria) AS Total
+            FROM Categorias c
+            LEFT JOIN Productos p ON c.id_Categoria = p.Id_Categoria
+            GROUP BY c.id_Categoria, c.nombre
+            ORDER BY c.id_Categoria
+        """;
+
+        try (Connection conn = Conexion.getConexion();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                Categoria categoria = new Categoria();
+                categoria.setId(rs.getInt("id_Categoria"));
+                categoria.setNombre(rs.getString("nombre"));
+
+                int total = rs.getInt("Total");
+
+                conteo.put(categoria, total);
+            }
+        }
+
+        return conteo;
     }
     
 //    public List<Producto> listarProductos() throws SQLException{

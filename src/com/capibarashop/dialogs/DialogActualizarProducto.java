@@ -8,11 +8,10 @@ import com.capibarashop.clases.CategoriaDAO;
 import com.capibarashop.clases.Categoria;
 import com.capibarashop.clases.Producto;
 import com.capibarashop.clases.ProductoDAO;
-import com.capibarashop.clases.Usuario;
 import com.capibarashop.clases.Utilidades;
+import com.capibarashop.swing.ScrollBar;
 import java.awt.Image;
 import java.io.IOException;
-import java.sql.SQLException;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.SpinnerNumberModel;
@@ -21,7 +20,6 @@ import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import java.io.File;
 import java.nio.file.Files;
 
 /**
@@ -46,6 +44,8 @@ public class DialogActualizarProducto extends javax.swing.JDialog {
         this.productoOriginal = producto;
         initComponents();
 
+        Utilidades.aplicarScrollCombo(jCBCategoria);
+        
         ImageIcon icon = new ImageIcon(getClass().getResource("/com/capibarashop/resources/capibaraAddProduct.png"));
         Image img = icon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
         jLCapibara.setIcon(new ImageIcon(img));
@@ -91,8 +91,8 @@ public class DialogActualizarProducto extends javax.swing.JDialog {
 
         jLTitulo.setFont(new java.awt.Font("STXinwei", 0, 24)); // NOI18N
         jLTitulo.setForeground(new java.awt.Color(0, 0, 0));
-        jLTitulo.setText("Agregar Nuevo Producto");
-        jPanel1.add(jLTitulo, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 10, 260, -1));
+        jLTitulo.setText("Actualizar Producto");
+        jPanel1.add(jLTitulo, new org.netbeans.lib.awtextra.AbsoluteConstraints(75, 10, 210, -1));
 
         jLCategoria.setFont(new java.awt.Font("STXinwei", 0, 18)); // NOI18N
         jLCategoria.setForeground(new java.awt.Color(0, 0, 0));
@@ -124,7 +124,7 @@ public class DialogActualizarProducto extends javax.swing.JDialog {
                 jCBCategoriaActionPerformed(evt);
             }
         });
-        jPanel1.add(jCBCategoria, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 420, 190, 30));
+        jPanel1.add(jCBCategoria, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 420, 230, 30));
         jPanel1.add(jTFNombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 80, 270, -1));
         jTFNombre.setText(productoOriginal.getNombre());
 
@@ -135,6 +135,11 @@ public class DialogActualizarProducto extends javax.swing.JDialog {
         jScrollPane1.setViewportView(jTADescripcion);
         jScrollPane1.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         jScrollPane1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        jScrollPane1.setVerticalScrollBar(new ScrollBar());
+        jScrollPane1.setBorder(javax.swing.BorderFactory.createEmptyBorder());
+        jScrollPane1.setViewportBorder(null);
+        jScrollPane1.setBorder(javax.swing.BorderFactory.createEmptyBorder());
+        jScrollPane1.getVerticalScrollBar().setUnitIncrement(15);
 
         jTADescripcion.setText(productoOriginal.getDescripcion());
 

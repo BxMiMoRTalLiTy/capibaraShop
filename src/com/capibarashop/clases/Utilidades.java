@@ -4,6 +4,8 @@
  */
 package com.capibarashop.clases;
 
+import com.capibarashop.swing.ScrollBar;
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
@@ -11,7 +13,12 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.geom.AffineTransform;
 import javax.swing.ImageIcon;
+import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 
 /**
  *
@@ -70,6 +77,22 @@ public class Utilidades {
             JOptionPane.showMessageDialog(null, "No se pudo cargar la imagen: " + path, "Error", JOptionPane.ERROR_MESSAGE);
             return null;
         }
-}
+    }
+    
+    public static void aplicarScrollCombo(JComboBox<?> combo) {
+        combo.addPopupMenuListener(new PopupMenuListener() {
+            public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+                Object comp = combo.getUI().getAccessibleChild(combo, 0);
+                if (comp instanceof JPopupMenu popup) {
+                    Component scroll = popup.getComponent(0);
+                    if (scroll instanceof JScrollPane scrollPane) {
+                        scrollPane.setVerticalScrollBar(new ScrollBar());
+                    }
+                }
+            }
+            public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {}
+            public void popupMenuCanceled(PopupMenuEvent e) {}
+        });
+    }
     
 }

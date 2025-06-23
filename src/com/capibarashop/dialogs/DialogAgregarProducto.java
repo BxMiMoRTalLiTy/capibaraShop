@@ -10,6 +10,7 @@ import com.capibarashop.clases.Producto;
 import com.capibarashop.clases.ProductoDAO;
 import com.capibarashop.clases.Usuario;
 import com.capibarashop.clases.Utilidades;
+import com.capibarashop.swing.ScrollBar;
 import java.awt.Image;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -23,6 +24,7 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
 import java.nio.file.Files;
+
 
 /**
  *
@@ -43,6 +45,9 @@ public class DialogAgregarProducto extends javax.swing.JDialog {
     public DialogAgregarProducto(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        
+        Utilidades.aplicarScrollCombo(jCBCategoria);
+        
         ImageIcon icon = new ImageIcon(getClass().getResource("/com/capibarashop/resources/capibaraAddProduct.png"));
         Image img = icon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH); // ← Ajusta tamaño aquí
         jLCapibara.setIcon(new ImageIcon(img));
@@ -87,7 +92,7 @@ public class DialogAgregarProducto extends javax.swing.JDialog {
         jLTitulo.setFont(new java.awt.Font("STXinwei", 0, 24)); // NOI18N
         jLTitulo.setForeground(new java.awt.Color(0, 0, 0));
         jLTitulo.setText("Agregar Nuevo Producto");
-        jPanel1.add(jLTitulo, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 10, 260, -1));
+        jPanel1.add(jLTitulo, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 10, 260, -1));
 
         jLCategoria.setFont(new java.awt.Font("STXinwei", 0, 18)); // NOI18N
         jLCategoria.setForeground(new java.awt.Color(0, 0, 0));
@@ -119,7 +124,7 @@ public class DialogAgregarProducto extends javax.swing.JDialog {
                 jCBCategoriaActionPerformed(evt);
             }
         });
-        jPanel1.add(jCBCategoria, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 420, 190, 30));
+        jPanel1.add(jCBCategoria, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 420, 230, 30));
         jPanel1.add(jTFNombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 80, 270, -1));
 
         jTADescripcion.setColumns(20);
@@ -129,6 +134,12 @@ public class DialogAgregarProducto extends javax.swing.JDialog {
         jScrollPane1.setViewportView(jTADescripcion);
         jScrollPane1.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         jScrollPane1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+
+        jScrollPane1.setVerticalScrollBar(new ScrollBar());
+        jScrollPane1.setBorder(javax.swing.BorderFactory.createEmptyBorder());
+        jScrollPane1.setViewportBorder(null);
+        jScrollPane1.setBorder(javax.swing.BorderFactory.createEmptyBorder());
+        jScrollPane1.getVerticalScrollBar().setUnitIncrement(15);
 
         jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 280, 250, 130));
 
@@ -236,7 +247,17 @@ public class DialogAgregarProducto extends javax.swing.JDialog {
         
         //String nombre, double precio, String descripcion, int stock, byte[] imagen, Categoria categoria, Usuario usuario
         if(Usuario.getUsuarioActual().getId() !=0 ){
-            Producto productoNuevo = new Producto(nombre, precio, descripcion, stock, imagenSeleccionada, categoria, Usuario.getUsuarioActual());
+            
+            Producto productoNuevo;
+            
+            if(imagenSeleccionada != null){
+                productoNuevo = new Producto(nombre, precio, descripcion, stock, imagenSeleccionada, categoria, 
+                        Usuario.getUsuarioActual());
+            }
+            else{
+                productoNuevo = new Producto(nombre, precio, descripcion, stock, categoria, Usuario.getUsuarioActual());
+            }
+            
         
             ProductoDAO dao = new ProductoDAO();
             try {

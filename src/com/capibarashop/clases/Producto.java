@@ -22,6 +22,18 @@ public class Producto {
     
     }
     
+    //Producto sin imagen = null
+    public Producto(String nombre, double precio, String descripcion, int stock, Categoria categoria, Usuario usuario){
+        this.nombre = nombre;
+        this.precio = precio;
+        this.descripcion = descripcion;
+        this.stock = stock;
+        this.categoria = categoria;
+        this.usuario = usuario;
+        this.imagen = null;
+    }
+    
+    //Producto con imagen
     public Producto(String nombre, double precio, String descripcion, int stock, byte[] imagen, Categoria categoria, Usuario usuario){
         this.nombre = nombre;
         this.precio = precio;
