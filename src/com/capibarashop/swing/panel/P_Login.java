@@ -6,7 +6,6 @@ package com.capibarashop.swing.panel;
 
 import com.capibarashop.clases.Usuario;
 import com.capibarashop.clases.dao.UsuarioDAO;
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Cursor;

@@ -30,8 +30,8 @@ public class DialogActualizarCategoriaBuscar extends javax.swing.JDialog {
     public DialogActualizarCategoriaBuscar(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        ImageIcon icon = new ImageIcon(getClass().getResource("/com/capibarashop/resources/capinbaraActualizarProducto.png"));
-        Image img = icon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH); // ← Ajusta tamaño aquí
+        ImageIcon icon = new ImageIcon(getClass().getResource(Utilidades.ACTUALIZAR_PRODUCTO));
+        Image img = icon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
         jLCapibara.setIcon(new ImageIcon(img));
         
         CategoriaDAO.cargarCategorias(jCBCategoria);
@@ -107,10 +107,10 @@ public class DialogActualizarCategoriaBuscar extends javax.swing.JDialog {
         
         
         if (categoria == null) {
-            u.generarMensajeGenerico(this, "/com/capibarashop/resources/capibaraError.png",
+            u.generarMensajeGenerico(this, Utilidades.ERROR_FALLO,
                     "¡La categoria: " + categoria.toString() + " no existe o no se encontró!",
                     "No se encontró ningun producto con ese ID, vuelve a intentarlo o verifica bien los IDs de tus productos existentes",
-                    "Buscar Producto", JOptionPane.INFORMATION_MESSAGE, 120, 120);
+                    "Buscar Producto", JOptionPane.INFORMATION_MESSAGE, 150, 150);
             return;
         }
         

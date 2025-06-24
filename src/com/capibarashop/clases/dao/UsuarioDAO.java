@@ -9,7 +9,7 @@ import com.capibarashop.clases.Usuario;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JOptionPane;
+import com.capibarashop.clases.Direccion;
 
 public class UsuarioDAO {
     
@@ -30,7 +30,7 @@ public class UsuarioDAO {
 
         Rol rol = new Rol(rs.getInt("id_Rol"), rs.getString("nombreRol"));
         u.setRol(rol);
-
+        
         return u;
     }
     
@@ -43,19 +43,31 @@ public class UsuarioDAO {
         
         try(Connection con = Conexion.getConexion();
             PreparedStatement ps = con.prepareStatement(sql)) {
+                
                 ps.setString(1, usuario);
                 ps.setString(2, contrasena);
-                
+
                 ResultSet rs = ps.executeQuery();
                 
-                if(rs.next()){
-                    return construirUsuario(rs);
+                if (rs.next()) {
+                Usuario u = construirUsuario(rs);
+
+                
+                DireccionDAO direccionDAO = new DireccionDAO();
+                List<Direccion> direcciones = direccionDAO.listarPorUsuario(u.getId());
+                u.setDirecciones(direcciones);
+                Direccion principal = direccionDAO.obtenerDireccionPrincipal(u.getId());
+                if (principal != null) {
+                    u.setDireccionSeleccionada(principal);
                 }
-            } catch(SQLException e){
-                e.printStackTrace();
+
+                Usuario.setUsuarioActual(u);
+                return u;
             }
-        return null;
+            return null;
+        }
     }
+        
     
     public boolean insertarUsuario(Usuario u) throws SQLException{ //usuarioNombre, nombre, contrasena, email, tel, id_rol
         String sql = "INSERT INTO Usuarios(usuarioNombre, nombre, contrasena, email, fechaNacimiento, tel, id_rol) "

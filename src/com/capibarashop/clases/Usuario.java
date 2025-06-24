@@ -4,8 +4,9 @@
  */
 package com.capibarashop.clases;
 
-import com.capibarashop.swing.panel.P_MiCuenta;
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Usuario {
     private int id;
@@ -16,6 +17,7 @@ public class Usuario {
     private String email;
     private Date fechaNacimiento;
     private String tel;
+    private List<Direccion> direcciones;
     private Direccion direccionSeleccionada;
     
     private static Usuario usuarioActual;
@@ -23,6 +25,7 @@ public class Usuario {
     //usuarioNombre, nombre, contrasena, email, tel, id_rol
     //Constructor
     public Usuario(){
+        this.direcciones = new ArrayList<>();
     }
     
     public Usuario(int id, String usuarioNombre, String nombre, String contrasena, String email, Date fechaNacimiento, String tel, Rol rol){
@@ -96,6 +99,10 @@ public class Usuario {
         return usuarioActual;
     }
     
+    public List<Direccion> getDirecciones(){
+        return direcciones;
+    }
+    
     public Direccion getDireccionSeleccionada() {
         return direccionSeleccionada;
     }
@@ -139,5 +146,8 @@ public class Usuario {
     public void setDireccionSeleccionada(Direccion direccionSeleccionada) {
         this.direccionSeleccionada = direccionSeleccionada;
     }
-        
+    
+    public void setDirecciones(List<Direccion> direcciones){
+        this.direcciones = direcciones;
+    }
 }

@@ -11,6 +11,7 @@ import com.capibarashop.clases.dao.DireccionDAO;
 import java.awt.Image;
 import java.util.List;
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 
 //DialogActualizarProducto
 
@@ -101,7 +102,16 @@ public class DialogSeleccionarDireccion extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jBSeleccionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBSeleccionarActionPerformed
-       
+       Direccion seleccionada = (Direccion) jCBDirecciones.getSelectedItem();
+        if (seleccionada != null) {
+            Usuario.getUsuarioActual().setDireccionSeleccionada(seleccionada);
+            this.dispose();
+        } else {
+            u.generarMensajeGenerico(this, Utilidades.FALTAN_CAMPOS,
+                    "¡Selecciona una dirección!",
+                    "No has seleccionado ninguna dirección.",
+                    "Dirección", JOptionPane.WARNING_MESSAGE, 150, 150);
+        }
     }//GEN-LAST:event_jBSeleccionarActionPerformed
 
     private void jBCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBCancelarActionPerformed

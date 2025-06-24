@@ -7,7 +7,6 @@ package com.capibarashop.clases.dao;
 import com.capibarashop.clases.Conexion;
 import com.capibarashop.clases.Direccion;
 import java.sql.*;
-import java.util.List;
 
 
 /**
@@ -15,6 +14,7 @@ import java.util.List;
  * @author Angel Aimar
  */
 public class VentaDAO {
+    
     public boolean realizarVentaDesdeCarrito(int idCarrito, int idUsuario, Direccion direccion) {
         String insertVenta = "INSERT INTO Ventas (id_Usuario, total) VALUES (?, ?)";
         String insertDetalle = "INSERT INTO Detalles_Ventas (id_Venta, id_Producto, cantidad, subtotal) VALUES (?, ?, ?, ?)";
@@ -24,15 +24,14 @@ public class VentaDAO {
 
         try (Connection con = Conexion.getConexion()) {
             con.setAutoCommit(false);
-
-            // Calcular total del carrito
+            
             PreparedStatement psCarrito = con.prepareStatement(selectProductos);
             psCarrito.setInt(1, idCarrito);
             ResultSet rs = psCarrito.executeQuery();
 
             double total = 0;
             new DetalleCarritoDAO();
-
+            
             while (rs.next()) {
                 int cantidad = rs.getInt("cantidad");
                 double precio = rs.getDouble("precio");
@@ -67,7 +66,7 @@ public class VentaDAO {
                 psDetalle.setDouble(4, cantidad * precio);
                 psDetalle.executeUpdate();
                 psDetalle.close();
-
+                
                 // Actualizar stock
                 PreparedStatement psStock = con.prepareStatement(updateStock);
                 psStock.setInt(1, cantidad);

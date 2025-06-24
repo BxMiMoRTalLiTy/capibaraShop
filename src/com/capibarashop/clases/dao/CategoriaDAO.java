@@ -7,7 +7,6 @@ package com.capibarashop.clases.dao;
 import com.capibarashop.clases.Categoria;
 import com.capibarashop.clases.Conexion;
 import java.sql.*;
-import java.util.*;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JComboBox;
@@ -18,8 +17,6 @@ import javax.swing.JOptionPane;
  * @author Angel Aimar
  */
 public class CategoriaDAO {
-    
-    
     
     public Categoria obtenerCategoria(int id){
         String sql = "SELECT * FROM Categorias WHERE id_Categoria = ?";

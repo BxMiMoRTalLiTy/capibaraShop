@@ -7,18 +7,22 @@ package com.capibarashop.swing.panel;
 import com.capibarashop.clases.DetalleCarrito;
 import com.capibarashop.clases.Direccion;
 import com.capibarashop.clases.Producto;
-import com.capibarashop.clases.RenderImagenTabla;
-import com.capibarashop.clases.RenderTextoCentrado;
 import com.capibarashop.clases.Usuario;
 import com.capibarashop.clases.dao.VentaDAO;
 import com.capibarashop.dialogs.direccion.DialogSeleccionarDireccion;
 import com.capibarashop.clases.Utilidades;
 import com.capibarashop.clases.dao.CarritoDAO;
 import com.capibarashop.clases.dao.DetalleCarritoDAO;
+import com.capibarashop.clases.dao.DireccionDAO;
+import java.awt.Color;
+import java.awt.Component;
 import java.util.List;
 import javax.swing.ImageIcon;
 import java.awt.Image;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 
@@ -31,60 +35,24 @@ public class P_CarritoVentas extends javax.swing.JPanel {
     Utilidades u = new Utilidades();
     private int idCarrito;
     private DefaultTableModel modelo;
+    Direccion direccion;
     /**
      * Creates new form P_CarritoVentas
      */
     public P_CarritoVentas() {
         initComponents();
+        DireccionDAO dao = new DireccionDAO();
         
-        modelo = new DefaultTableModel() {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return column == 2;
-            }
-
-            @Override
-            public Class<?> getColumnClass(int columnIndex) {
-                return switch (columnIndex) {
-                    case 0 -> ImageIcon.class;
-                    case 1 -> String.class;
-                    case 2 -> Integer.class;
-                    case 3, 4 -> String.class;
-                    default -> Object.class;
-                };
-            }
-        };
-
-        modelo.setColumnIdentifiers(new String[]{"Foto", "Nombre", "Cantidad", "Subtotal", "Total Producto"});
-        jTCarrito.setModel(modelo);
-        jTCarrito.setRowHeight(60);
-        jTCarrito.getColumnModel().getColumn(0).setCellRenderer(new RenderImagenTabla(48, 48));
+        direccion = dao.obtenerDireccionPrincipal(Usuario.getUsuarioActual().getId());
         
-        // Tamaños explícitos para evitar que las columnas colapsen
-        jTCarrito.getColumnModel().getColumn(0).setPreferredWidth(60);   // Foto
-        jTCarrito.getColumnModel().getColumn(1).setPreferredWidth(200);  // Nombre
-        jTCarrito.getColumnModel().getColumn(2).setPreferredWidth(80);   // Cantidad
-        jTCarrito.getColumnModel().getColumn(3).setPreferredWidth(100);  // Subtotal
-        jTCarrito.getColumnModel().getColumn(4).setPreferredWidth(120);  // Total Producto
-        
-        // Forzar render personalizado para texto (ya lo haces bien)
-        RenderTextoCentrado renderTexto = new RenderTextoCentrado();
-        for (int i = 1; i <= 4; i++) {
-            jTCarrito.getColumnModel().getColumn(i).setCellRenderer(renderTexto);
+        if (direccion != null) {
+            lblDireccionEntrega.setText(direccion.toString());
+        } else {
+            lblDireccionEntrega.setText("No hay dirección seleccionada");
         }
-
-        modelo.addTableModelListener(e -> {
-            if (e.getColumn() == 2) {
-                int fila = e.getFirstRow();
-                int cantidad = (int) modelo.getValueAt(fila, 2);
-                double precioUnitario = Double.parseDouble(modelo.getValueAt(fila, 3).toString().replace("$", ""));
-                double subtotal = cantidad * precioUnitario;
-
-                modelo.setValueAt(String.format("$%.2f", subtotal), fila, 4);
-                actualizarTotalGeneral();
-            }
-        });
         
+        
+        prepararTabla();
         idCarrito = obtenerIdCarritoActivo();
         cargarProductosDelCarrito();
     }
@@ -130,9 +98,10 @@ public class P_CarritoVentas extends javax.swing.JPanel {
         jLabel1.setText("Carrito");
         jPanel1.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, -1, -1));
 
+        jTCarrito.setBackground(new java.awt.Color(255, 255, 255));
         jTCarrito.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {}
+
             },
             new String [] {
 
@@ -141,7 +110,7 @@ public class P_CarritoVentas extends javax.swing.JPanel {
         jTCarrito.setPreferredSize(new java.awt.Dimension(670, 20));
         jSPTabla.setViewportView(jTCarrito);
 
-        jPanel1.add(jSPTabla, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 40, 670, 540));
+        jPanel1.add(jSPTabla, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 40, 670, 530));
 
         jTable2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -199,24 +168,53 @@ public class P_CarritoVentas extends javax.swing.JPanel {
     }
     
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-
-        Direccion direccion = Usuario.getUsuarioActual().getDireccionSeleccionada();
-
+        DireccionDAO dao = new DireccionDAO();
+        
         if (direccion != null) {
-            // Mostrar datos al usuario
-            lblDireccionEntrega.setText(direccion.toString());
+            int respuesta = JOptionPane.showConfirmDialog(this,
+                    "¿Deseas usar la dirección actual?\n\n" + direccion.toString().replaceAll("<[^>]*>", ""),
+                    "Confirmar dirección",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE);
+
+            if (respuesta == JOptionPane.NO_OPTION) {
+                DialogSeleccionarDireccion dialog = new DialogSeleccionarDireccion(null, true);
+                dialog.setVisible(true);
+
+                // Si seleccionó una nueva dirección en el diálogo
+                Direccion nuevaDireccion = Usuario.getUsuarioActual().getDireccionSeleccionada();
+                if (nuevaDireccion != null) {
+                    direccion = nuevaDireccion;
+                    lblDireccionEntrega.setText(direccion.toString());
+                    dao.marcarComoPrincipal(direccion.getId(), Usuario.getUsuarioActual().getId());
+                } else {
+                    u.generarMensajeGenerico(this, Utilidades.FALTAN_CAMPOS,
+                            "¡Falta la Dirección!",
+                            "No se seleccionó una Dirección\nSino ¿Cómo te llegará tu paquete?",
+                            "Dirección", JOptionPane.INFORMATION_MESSAGE, 150, 150);
+                    return;
+                }
+            }
         } else {
+            // No tiene ninguna dirección aún
             DialogSeleccionarDireccion dialog = new DialogSeleccionarDireccion(null, true);
             dialog.setVisible(true);
-            if (direccion == null) {
+
+            Direccion nuevaDireccion = Usuario.getUsuarioActual().getDireccionSeleccionada();
+            if (nuevaDireccion != null) {
+                direccion = nuevaDireccion;
+                lblDireccionEntrega.setText(direccion.toString());
+                dao.marcarComoPrincipal(direccion.getId(), Usuario.getUsuarioActual().getId());
+            } else {
                 u.generarMensajeGenerico(this, Utilidades.FALTAN_CAMPOS,
                         "¡Falta la Dirección!",
-                        "No se seleccionó una Dirección\nSino ¿Cómo te llegará tú Paquete?",
+                        "No se seleccionó una Dirección\nSino ¿Cómo te llegará tu paquete?",
                         "Dirección", JOptionPane.INFORMATION_MESSAGE, 150, 150);
                 return;
             }
         }
-        
+
+        // Realiza la venta
         VentaDAO ventaDAO = new VentaDAO();
         boolean exito = ventaDAO.realizarVentaDesdeCarrito(idCarrito, Usuario.getUsuarioActual().getId(), direccion);
 
@@ -228,11 +226,13 @@ public class P_CarritoVentas extends javax.swing.JPanel {
                     "Compra Realizada", JOptionPane.INFORMATION_MESSAGE, 150, 150);
             modelo.setRowCount(0);
             actualizarTotalGeneral();
+            // Actualizar etiqueta
+            lblDireccionEntrega.setText(direccion.toString());
         } else {
             u.generarMensajeGenerico(this, Utilidades.ERROR_FALLO,
                     "¡Hubo un error inesperado!",
                     "Tu compra no se pudo realizar",
-                    "Compra no realiada", JOptionPane.ERROR_MESSAGE, 150, 150);
+                    "Compra no realizada", JOptionPane.ERROR_MESSAGE, 150, 150);
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -266,11 +266,13 @@ public class P_CarritoVentas extends javax.swing.JPanel {
                     icono = new ImageIcon(imagenEscalada);
                 }
 
-                System.out.println("Agregando a tabla: "
-                + "nombre=" + producto.getNombre()
-                + ", cantidad=" + cantidad
-                + ", precio=" + precio
-                + ", subtotal=" + subtotal);
+//                System.out.println("Agregando a tabla: "
+//                + "nombre=" + producto.getNombre()
+//                + ", cantidad=" + cantidad
+//                + ", precio=" + precio
+//                + ", subtotal=" + subtotal);
+                   
+                
                 
                 modelo.addRow(new Object[]{
                     icono, // Imagen renderizada
@@ -279,6 +281,15 @@ public class P_CarritoVentas extends javax.swing.JPanel {
                     String.format("$%.2f", precio),
                     String.format("$%.2f", subtotal)
                 });
+                
+//                modelo.addRow(new Object[]{
+//                    null, // Imagen renderizada
+//                    "prueba",
+//                    1,
+//                    "$100.00",
+//                    "$100.00"
+//                });
+
 
                 total += subtotal;
             } else {
@@ -290,6 +301,64 @@ public class P_CarritoVentas extends javax.swing.JPanel {
         DefaultTableModel modeloTotales = (DefaultTableModel) jTable2.getModel();
         modeloTotales.setRowCount(0);
         modeloTotales.addRow(new Object[]{String.format("$%.2f", total)});
+    }
+    
+    private void prepararTabla(){
+        modelo = new DefaultTableModel(
+            new Object[]{"Imagen", "Nombre", "Cantidad", "Precio", "Subtotal"}, 0
+        );
+        jTCarrito.setModel(modelo);
+
+        jTCarrito.setFillsViewportHeight(true);
+        jTCarrito.setShowGrid(true);
+        jTCarrito.setGridColor(Color.LIGHT_GRAY);
+        
+        jTCarrito.setRowHeight(60);
+        
+        // Renderizador para la columna de imagen
+        jTCarrito.getColumnModel().getColumn(0).setCellRenderer(new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                if (value instanceof ImageIcon imageIcon) {
+                    setIcon(imageIcon);
+                    setText(""); 
+                } else {
+                    setIcon(null);
+                    setText(value != null ? value.toString() : "");
+                }
+                return this;
+            }
+        });
+
+        // Renderizador centrado para columnas de texto (del 1 al 4) — ¡UNO DIFERENTE POR COLUMNA!
+        for (int i = 1; i <= 4; i++) {
+            DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+            centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+            jTCarrito.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        }
+        
+        
+        
+        // Tamaños explícitos para evitar que las columnas colapsen
+        jTCarrito.getColumnModel().getColumn(0).setPreferredWidth(60);   // Foto
+        jTCarrito.getColumnModel().getColumn(1).setPreferredWidth(200);  // Nombre
+        jTCarrito.getColumnModel().getColumn(2).setPreferredWidth(80);   // Cantidad
+        jTCarrito.getColumnModel().getColumn(3).setPreferredWidth(100);  // Precio
+        jTCarrito.getColumnModel().getColumn(4).setPreferredWidth(120);  // Subtotal
+
+        jTCarrito.setRowHeight(60); // Para que las imágenes se vean bien
+
+        modelo.addTableModelListener(e -> {
+            if (e.getColumn() == 2) {
+                int fila = e.getFirstRow();
+                int cantidad = (int) modelo.getValueAt(fila, 2);
+                double precioUnitario = Double.parseDouble(modelo.getValueAt(fila, 3).toString().replace("$", ""));
+                double subtotal = cantidad * precioUnitario;
+
+                modelo.setValueAt(String.format("$%.2f", subtotal), fila, 4);
+                actualizarTotalGeneral();
+            }
+        });
     }
     
 

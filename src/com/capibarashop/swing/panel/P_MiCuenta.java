@@ -12,7 +12,6 @@ import com.capibarashop.clases.dao.UsuarioDAO;
 import com.capibarashop.dialogs.direccion.DialogAgregarDireccion;
 import java.util.List;
 import javax.swing.JOptionPane;
-import java.sql.SQLException;
 
 /**
  *
@@ -21,6 +20,8 @@ import java.sql.SQLException;
 public class P_MiCuenta extends javax.swing.JPanel {
 
     Utilidades u = new Utilidades();
+    
+   
     
     /**
      * Creates new form P_MiCuenta
@@ -31,7 +32,6 @@ public class P_MiCuenta extends javax.swing.JPanel {
         cargarDatosUsuario();
         txtNuevaContrasena.setEchoChar('•');
         txtConfirmarContrasena.setEchoChar('•');
-
     }
 
     /**
@@ -173,7 +173,7 @@ public class P_MiCuenta extends javax.swing.JPanel {
         jLabel8.setText("Nombre:");
         jPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 50, -1, -1));
 
-        jPanel1.add(jCBDirecciones, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 150, 360, 70));
+        jPanel1.add(jCBDirecciones, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 150, 350, 70));
 
         jLabel9.setFont(new java.awt.Font("STXinwei", 0, 24)); // NOI18N
         jLabel9.setText("Direccion:");

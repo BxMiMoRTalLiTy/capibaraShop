@@ -82,6 +82,6 @@ public class Direccion {
 
     @Override
     public String toString() {
-        return calle + ", " + ciudad + ", " + estado + ", " + pais + " (" + tipo + ")" + ", " + codigoPostal + " CP";
+        return "<html>" + calle + "<br>" + ciudad + ", " + estado + "<br>" + codigoPostal + ", " + pais + "</html>";
     }
 }
