@@ -18,13 +18,14 @@ public class Categoria {
         this.id = id;
         this.nombre = nombre;
     }
-
+    
     public int getId() { return id; }
+    
     public String getNombre() { return nombre; }
 
     @Override
     public String toString() {
-        return nombre; // para que se vea bien en el JComboBox
+        return nombre; 
     }
     
     public void setId(int id){

@@ -2,10 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JDialog.java to edit this template
  */
-package com.capibarashop.dialogs;
+package com.capibarashop.dialogs.producto;
 
 import com.capibarashop.clases.Producto;
-import com.capibarashop.clases.ProductoDAO;
+import com.capibarashop.clases.dao.ProductoDAO;
 import com.capibarashop.clases.Usuario;
 import com.capibarashop.clases.Utilidades;
 import java.awt.Image;
@@ -17,19 +17,19 @@ import javax.swing.SpinnerNumberModel;
  *
  * @author Angel Aimar
  */
-public class DialogEliminarProducto extends javax.swing.JDialog {
+public class DialogActualizarProductoBuscar extends javax.swing.JDialog {
     
     private Utilidades u = new Utilidades();
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(DialogEliminarProducto.class.getName());
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(DialogActualizarProductoBuscar.class.getName());
 
     /**
      * Creates new form DialogAgregarProducto
      */
-    public DialogEliminarProducto(java.awt.Frame parent, boolean modal) {
+    public DialogActualizarProductoBuscar(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        ImageIcon icon = new ImageIcon(getClass().getResource("/com/capibarashop/resources/capibaraEliminateProduct.png"));
+        ImageIcon icon = new ImageIcon(getClass().getResource(Utilidades.ACTUALIZAR_PRODUCTO));
         Image img = icon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH); // ← Ajusta tamaño aquí
         jLCapibara.setIcon(new ImageIcon(img));
     }
@@ -49,7 +49,7 @@ public class DialogEliminarProducto extends javax.swing.JDialog {
         jBBuscar = new javax.swing.JButton();
         jLCapibara = new javax.swing.JLabel();
         jSIdProducto = new javax.swing.JSpinner();
-        jBBuscar1 = new javax.swing.JButton();
+        jBCancelar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -58,8 +58,8 @@ public class DialogEliminarProducto extends javax.swing.JDialog {
 
         jLTitulo.setFont(new java.awt.Font("STXinwei", 0, 24)); // NOI18N
         jLTitulo.setForeground(new java.awt.Color(0, 0, 0));
-        jLTitulo.setText("Eliminar Producto");
-        jPanel1.add(jLTitulo, new org.netbeans.lib.awtextra.AbsoluteConstraints(15, 10, 190, -1));
+        jLTitulo.setText("Buscar Producto");
+        jPanel1.add(jLTitulo, new org.netbeans.lib.awtextra.AbsoluteConstraints(25, 10, 170, -1));
 
         jLNombre.setFont(new java.awt.Font("STXinwei", 0, 18)); // NOI18N
         jLNombre.setForeground(new java.awt.Color(0, 0, 0));
@@ -74,18 +74,18 @@ public class DialogEliminarProducto extends javax.swing.JDialog {
             }
         });
         jPanel1.add(jBBuscar, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 190, 120, -1));
-        jPanel1.add(jLCapibara, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 40, 120, 120));
+        jPanel1.add(jLCapibara, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 35, 120, 120));
         jPanel1.add(jSIdProducto, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 160, 100, -1));
         jSIdProducto.setModel(new SpinnerNumberModel(0, 0, 999999, 1));
 
-        jBBuscar1.setFont(new java.awt.Font("STXinwei", 0, 14)); // NOI18N
-        jBBuscar1.setText("Cancelar");
-        jBBuscar1.addActionListener(new java.awt.event.ActionListener() {
+        jBCancelar.setFont(new java.awt.Font("STXinwei", 0, 14)); // NOI18N
+        jBCancelar.setText("Cancelar");
+        jBCancelar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jBBuscar1ActionPerformed(evt);
+                jBCancelarActionPerformed(evt);
             }
         });
-        jPanel1.add(jBBuscar1, new org.netbeans.lib.awtextra.AbsoluteConstraints(65, 230, 90, -1));
+        jPanel1.add(jBCancelar, new org.netbeans.lib.awtextra.AbsoluteConstraints(65, 230, 90, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -108,63 +108,30 @@ public class DialogEliminarProducto extends javax.swing.JDialog {
         Producto p = null;
         
         ProductoDAO dao = new ProductoDAO();
-        if(Usuario.getUsuarioActual().getId() == 1){
-            p = dao.buscarProductoIDAdmin(id);
-        }
-        else{
-            p = dao.buscarProductoIDyUsuario(id, Usuario.getUsuarioActual().getId());
-        }
+        p = dao.buscarProductoIDVendedores(id);
         
         if (p == null) {
-            
-            
-            u.generarMensajeGenerico(this, "/com/capibarashop/resources/capibaraNoProductoEncontrado.png",
+            u.generarMensajeGenerico(this, Utilidades.PRODUCTO_NO_ENCONTRADO,
                     "¡El producto de ID: " + id + " no existe o no se encontró!",
                     "No se encontró ningun producto con ese ID, vuelve a intentarlo o verifica bien los IDs de tus productos existentes",
-                    "Buscar Producto", JOptionPane.INFORMATION_MESSAGE, 120, 120);
+                    "Buscar Producto", JOptionPane.INFORMATION_MESSAGE, 150, 150);
             return;
         }
         
-        String mensaje = "<html>"
-        + "<h3>¿Deseas eliminar el siguiente producto?</h3>"
-        + "<table cellpadding='4'>"
-        + "<tr><td><b>ID:</b></td><td>" + p.getId() + "</td></tr>"
-        + "<tr><td><b>Nombre:</b></td><td>" + p.getNombre() + "</td></tr>"
-        + "<tr><td><b>Precio:</b></td><td>$" + String.format("%.2f", p.getPrecio()) + "</td></tr>"
-        + "<tr><td><b>Stock:</b></td><td>" + p.getStock() + "</td></tr>"
-        + "<tr><td><b>Descripción:</b></td><td>" + p.getDescripcion() + "</td></tr>"
-        + "</table>"
-        + "</html>";
-        //JOptionPane.showMessageDialog(this, mensaje, "Éxito", JOptionPane.INFORMATION_MESSAGE, icono);
-        int confirmacion = JOptionPane.showConfirmDialog(this, mensaje, "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
-
-        if (confirmacion == JOptionPane.YES_OPTION) {
-            if (dao.eliminarProducto(p.getId())) {
-                u.generarMensajeGenerico(this, "/com/capibarashop/resources/capibaraEliminateProduct.png",
-                    "¡Producto eliminado exitosamente!",
-                    "El Producto " + p.getNombre() + "Ha sido eliminado exitosamente",
-                    "Eliminación", JOptionPane.INFORMATION_MESSAGE, 120, 120);
-                dispose();
-            } else {
-                u.generarMensajeGenerico(this, "/com/capibarashop/resources/capibaraError.png",
-                    "¡Hubo un error inesperado!",
-                    "No se pudo eliminar el producto",
-                    "Error Inesperado", JOptionPane.ERROR_MESSAGE, 120, 120);
-            }
-        }
-        
-        
+        DialogActualizarProducto dialog = new DialogActualizarProducto(null, true, p);
+        dialog.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_jBBuscarActionPerformed
 
-    private void jBBuscar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBBuscar1ActionPerformed
+    private void jBCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBCancelarActionPerformed
         // TODO add your handling code here:
         this.dispose();
-    }//GEN-LAST:event_jBBuscar1ActionPerformed
+    }//GEN-LAST:event_jBCancelarActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jBBuscar;
-    private javax.swing.JButton jBBuscar1;
+    private javax.swing.JButton jBCancelar;
     private javax.swing.JLabel jLCapibara;
     private javax.swing.JLabel jLNombre;
     private javax.swing.JLabel jLTitulo;

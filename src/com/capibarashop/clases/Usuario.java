@@ -4,6 +4,7 @@
  */
 package com.capibarashop.clases;
 
+import com.capibarashop.swing.panel.P_MiCuenta;
 import java.sql.Date;
 
 public class Usuario {
@@ -15,6 +16,7 @@ public class Usuario {
     private String email;
     private Date fechaNacimiento;
     private String tel;
+    private Direccion direccionSeleccionada;
     
     private static Usuario usuarioActual;
     
@@ -32,6 +34,18 @@ public class Usuario {
         this.fechaNacimiento = fechaNacimiento;
         this.tel = tel;
         this.rol = rol;
+    }
+    
+    public Usuario(int id, String usuarioNombre, String nombre, String contrasena, String email, Date fechaNacimiento, String tel, Rol rol, Direccion direccionSeleccionada){
+        this.id = id;
+        this.usuarioNombre = usuarioNombre;
+        this.nombre = nombre;
+        this.contrasena = contrasena; 
+        this.email = email;
+        this.fechaNacimiento = fechaNacimiento;
+        this.tel = tel;
+        this.rol = rol;
+        this.direccionSeleccionada = direccionSeleccionada;
     }
     
     public Usuario(String usuarioNombre, String nombre, String contrasena, String email, Date fechaNacimiento, String tel, Rol rol){
@@ -82,6 +96,10 @@ public class Usuario {
         return usuarioActual;
     }
     
+    public Direccion getDireccionSeleccionada() {
+        return direccionSeleccionada;
+    }
+    
     public void setId(int id){
         this.id=id;
     }
@@ -116,6 +134,10 @@ public class Usuario {
     
     public static void setUsuarioActual(Usuario u){
         usuarioActual = u;
+    }
+    
+    public void setDireccionSeleccionada(Direccion direccionSeleccionada) {
+        this.direccionSeleccionada = direccionSeleccionada;
     }
         
 }

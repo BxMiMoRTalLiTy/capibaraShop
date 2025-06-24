@@ -2,8 +2,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.capibarashop.clases;
+package com.capibarashop.clases.dao;
 
+import com.capibarashop.clases.Categoria;
+import com.capibarashop.clases.Conexion;
+import com.capibarashop.clases.Producto;
+import com.capibarashop.clases.Usuario;
 import java.sql.*;
 import java.util.*;
 import javax.swing.JOptionPane;
@@ -14,7 +18,7 @@ import javax.swing.JOptionPane;
  */
 public class ProductoDAO {
     
-    private Producto construirProducto (ResultSet rs) throws SQLException{
+    public Producto construirProducto (ResultSet rs) throws SQLException{
         Producto p = new Producto();
         
         p.setId(rs.getInt("id_Producto"));
@@ -23,7 +27,7 @@ public class ProductoDAO {
         p.setDescripcion(rs.getString("descripcion"));
         p.setStock(rs.getInt("stock"));
         p.setImagen(rs.getBytes("imagen"));
-
+        
         CategoriaDAO cDao = new CategoriaDAO();
         Categoria c = cDao.obtenerCategoria(rs.getInt("id_Categoria"));
         if (c == null) {
@@ -60,19 +64,34 @@ public class ProductoDAO {
             e.printStackTrace();
             return false;
         }
-        
     }
     
-    public Producto buscarProductoIDAdmin(int idProducto){
-        String sql = """
+    public Producto buscarProductoIDVendedores(int idProducto){
+        String sql;
+        
+        boolean esAdmin = Usuario.getUsuarioActual().getRol().toString().equalsIgnoreCase("Administrador");
+        
+        if(esAdmin){
+            sql = """
                 SELECT * FROM Productos
                 WHERE id_Producto = ?
             """;
+        }
+        else{
+            sql = """
+                SELECT * FROM Productos
+                WHERE id_Producto = ? AND id_Usuario = ?
+            """;
+        }
         
         try (Connection con = Conexion.getConexion(); PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, idProducto);
-
+            
+            if(!esAdmin){
+                ps.setInt(2, Usuario.getUsuarioActual().getId());
+            }
+            
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
@@ -87,29 +106,60 @@ public class ProductoDAO {
         return null;
     }
     
-    public Producto buscarProductoIDyUsuario(int idProducto, int idUsuario){
-        String sql = """
-                SELECT * FROM Productos
-                WHERE id_Producto = ? AND id_Usuario = ?
-            """;
-        try (Connection con = Conexion.getConexion();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+    public Producto buscarProductoIDClientes(int idProducto){
+        String sql;
+        
+        sql = """
+            SELECT * FROM Productos
+            WHERE id_Producto = ?
+        """;
+        
+        try (Connection con = Conexion.getConexion(); PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, idProducto);
-            ps.setInt(2, idUsuario);
-
+            
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
-                return construirProducto(rs);
+                try {
+                    return construirProducto(rs);
+                } catch (SQLException ex) {
+                    System.err.println("Error construyendo producto con ID " + idProducto + ": " + ex.getMessage());
+                }
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
+        
+        //System.err.println("Producto es null incluso después de intentar construirlo. ID: " + idProducto);
         return null;
     }
+    
+    
+//    public Producto buscarProductoIDyUsuario(int idProducto, int idUsuario){
+//        String sql = """
+//                SELECT * FROM Productos
+//                WHERE id_Producto = ? AND id_Usuario = ?
+//            """;
+//        try (Connection con = Conexion.getConexion();
+//             PreparedStatement ps = con.prepareStatement(sql)) {
+//
+//            ps.setInt(1, idProducto);
+//            ps.setInt(2, idUsuario);
+//
+//            ResultSet rs = ps.executeQuery();
+//
+//            if (rs.next()) {
+//                return construirProducto(rs);
+//            }
+//
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//
+//        return null;
+//    }
     
     
     //Para cualquier usuario
@@ -146,20 +196,26 @@ public class ProductoDAO {
         return lista;
     }
     
-    //Para el ADMIN
-//    public List<Producto> listarProductosAdmin() throws SQLException {
-//        List<Producto> lista = new ArrayList<>();
-//        String sql = "SELECT * FROM Productos";
-//
-//        try (Connection con = Conexion.getConexion(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
-//
-//            while (rs.next()) {
-//                lista.add(construirProducto(rs));
-//            }
-//        }
-//
-//        return lista;
-//    }
+    public List<Producto> listarProductosParaClientes() throws SQLException {
+        List<Producto> lista = new ArrayList<>();
+        
+        
+        String sql;
+        
+        sql = "SELECT * FROM Productos";
+
+        try (Connection con = Conexion.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                lista.add(construirProducto(rs));
+            }
+        }
+
+        return lista;
+    }
     
     public boolean eliminarProducto(int idProducto){
         String sql = "DELETE FROM Productos WHERE id_Producto = ?";
@@ -181,30 +237,18 @@ public class ProductoDAO {
     public List<Producto> listarProductosPorCategoria(int idCategoria) throws SQLException {
         List<Producto> lista = new ArrayList<>();
         
-        //boolean usuario = Usuario.getUsuarioActual().getRol().toString().equalsIgnoreCase("Administrador");
         String sql;
         
-        //if(usuario){
             sql = """
                 SELECT * FROM Productos
                 WHERE id_Categoria = ?
             """;
-        //}
-//        else{
-//            sql = """
-//                SELECT * FROM Productos
-//                WHERE id_Categoria = ? AND id_Usuario = ?
-//            """;
-//        }
 
         try (Connection con = Conexion.getConexion();
              PreparedStatement ps = con.prepareStatement(sql)) {
             
             
             ps.setInt(1, idCategoria);
-            //if(!usuario){
-                //ps.setInt(2, Usuario.getUsuarioActual().getId());
-            //}
             
             
             ResultSet rs = ps.executeQuery();
@@ -246,22 +290,6 @@ public class ProductoDAO {
         return conteo;
     }
     
-//    public List<Producto> listarProductos() throws SQLException{
-//        List<Producto> lista = new ArrayList<>();
-//        String sql = "SELECT * FROM Productos";
-//        
-//        try(Connection con = Conexion.getConexion();
-//                PreparedStatement insert = con.prepareStatement(sql);
-//                ResultSet rs = insert.executeQuery()){
-//            while(rs.next()){
-//                lista.add(construirProducto(rs));
-//            }
-//        }catch(SQLException e){
-//            e.printStackTrace();
-//        }
-//        return lista;
-//    }
-    
     public boolean actualizarProducto(Producto p){
         String sql = "UPDATE Productos SET nombre = ?, precio = ?, descripcion = ?, stock = ?, imagen = ?,"
                 + "id_Categoria = ? WHERE id_Producto = ?";
@@ -282,5 +310,53 @@ public class ProductoDAO {
         }
     }
     
-    
+    public Producto obtenerPorId(int idProducto) {
+        String sql = "SELECT p.*, c.id_Categoria, c.nombre AS nombre_categoria, "
+               + "u.id_Usuario, u.nombre AS nombre_usuario "
+               + "FROM Productos p "
+               + "JOIN Categorias c ON p.id_Categoria = c.id_Categoria "
+               + "JOIN Usuarios u ON p.id_Usuario = u.id_Usuario "
+               + "WHERE p.id_Producto = ?";
+
+        try (Connection con = Conexion.getConexion(); 
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, idProducto);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                // Cargar categoría
+                Categoria categoria = new Categoria(
+                    rs.getInt("id_Categoria"),
+                    rs.getString("nombre_categoria")
+                );
+
+                // Cargar usuario
+                Usuario usuario = new Usuario();
+                usuario.setId(rs.getInt("id_Usuario"));
+                usuario.setNombre(rs.getString("nombre_usuario"));
+
+                // Crear el producto
+                Producto producto = new Producto(
+                    rs.getInt("id_Producto"),
+                    rs.getString("nombre"),
+                    rs.getDouble("precio"),
+                    rs.getString("descripcion"),
+                    rs.getInt("stock"),
+                    categoria,
+                    usuario
+                );
+
+                // Imagen
+                producto.setImagen(rs.getBytes("imagen"));
+
+                return producto;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 }

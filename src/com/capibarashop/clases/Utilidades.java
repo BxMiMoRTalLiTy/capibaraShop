@@ -25,6 +25,29 @@ import javax.swing.event.PopupMenuListener;
  * @author Angel Aimar
  */
 public class Utilidades {
+    /* Recursos empleados de manera más simplificada */
+    
+    public static final String FALTAN_CAMPOS = "/com/capibarashop/resources/capibaraFaltanCampos.png";
+    public static final String ERROR_FALLO = "/com/capibarashop/resources/capibaraError.png";
+    public static final String LOGO_CAPIBARA = "/com/capibarashop/resources/capibara.png";
+    public static final String EXITO_PROCESO_GENERICO = "/com/capibarashop/resources/capibaraExito.png";
+    public static final String PRODUCTO_NO_ENCONTRADO = "/com/capibarashop/resources/capibaraNoProductoEncontrado.png";
+    public static final String PRODUCTO_ACTUALIZADO = "/com/capibarashop/resources/capibaraProductoActualizado.png";
+    public static final String REGISTRO_CORRECTO = "/com/capibarashop/resources/capibaraRegistroCorrecto.png";
+    public static final String ELIMINAR_PRODUCTO = "/com/capibarashop/resources/capibaraEliminateProduct.png";
+    public static final String AGREGAR_PRODUCTO = "/com/capibarashop/resources/capibaraAddProduct.png";
+    public static final String IMG_VENDEDOR = "/com/capibarashop/resources/ccapibaraVendedor.png";
+    public static final String ACTUALIZAR_PRODUCTO = "/com/capibarashop/resources/capibaraActualizarProducto.png";
+    public static final String IMG_REPARTIDOR = "/com/capibarashop/resources/capibaraRepartidor.png";
+    public static final String INFORMACION_USUARIO = "/com/capibarashop/resources/capibaraUsuarioInformacion.png";
+    public static final String USUARIO_CORREO_DUPLICADO = "/com/capibarashop/resources/capibaraUsuarioInformacionDuplicado.png";
+    public static final String IMG_USUARIO = "/com/capibarashop/resources/capibaraCliente.png";
+    public static final String DEFAULT_PRODUCTO = "/com/capibarashop/resources/defaultProducto.png";
+    public static final String AGREGAR_DIRECCION = "/com/capibarashop/resources/capibaraAddDireccion.png";
+    public static final String SELECCIONAR_DIRECCION = "/com/capibarashop/resources/capibaraSeleccionarDireccion.png";
+    public static final String CATEGORIA_AGREGAR = "/com/capibarashop/resources/capibaraAddCategori.png";
+    public static final String USUARIO_EDITOR_DESACTIVADO = "/com/capibarashop/resources/capibaraEdicionDesactivada.png";
+    public static final String USUARIO_ACTUALIZADO = "/com/capibarashop/resources/capibaraUpdateUser.png";
     
     public static String generarHTMLProducto(Producto p) {
         return "<html>"

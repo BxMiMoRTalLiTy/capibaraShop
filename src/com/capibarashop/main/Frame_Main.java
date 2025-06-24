@@ -4,10 +4,8 @@
  */
 package com.capibarashop.main;
 
-import com.capibarashop.swing.Panel_Login_Register;
+import com.capibarashop.swing.panel.Panel_Login_Register;
 import com.formdev.flatlaf.FlatLightLaf;
-import com.sun.tools.javac.Main;
-import java.awt.Color;
 import java.sql.SQLException;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
@@ -39,7 +37,7 @@ public class Frame_Main extends javax.swing.JFrame {
 
         panelPantalla = new javax.swing.JPanel();
         try {
-            panel_Login_Register1 = new com.capibarashop.swing.Panel_Login_Register();
+            panel_Login_Register1 = new com.capibarashop.swing.panel.Panel_Login_Register();
         } catch (java.sql.SQLException e1) {
             e1.printStackTrace();
         }
@@ -118,6 +116,6 @@ public class Frame_Main extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel panelPantalla;
-    private com.capibarashop.swing.Panel_Login_Register panel_Login_Register1;
+    private com.capibarashop.swing.panel.Panel_Login_Register panel_Login_Register1;
     // End of variables declaration//GEN-END:variables
 }

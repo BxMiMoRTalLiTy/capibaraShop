@@ -2,11 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package com.capibarashop.swing;
+package com.capibarashop.swing.panel;
 
 import com.capibarashop.clases.Rol;
 import com.capibarashop.clases.Usuario;
-import com.capibarashop.clases.UsuarioDAO;
+import com.capibarashop.clases.dao.UsuarioDAO;
 import com.capibarashop.clases.Utilidades;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -363,7 +363,7 @@ public class P_Register extends javax.swing.JPanel {
         // TODO add your handling code here:
         txtPass2.requestFocusInWindow();
     }//GEN-LAST:event_txtPass1ActionPerformed
-
+    
     private void jButtonRegisterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonRegisterActionPerformed
         String usuario = txtUser.getText().trim();
         String nombre = txtNombre.getText().trim();
@@ -377,7 +377,7 @@ public class P_Register extends javax.swing.JPanel {
         if (usuario.isEmpty() || nombre.isEmpty() || pass1.isEmpty() || pass2.isEmpty() || email.isEmpty() || 
                 jFechaNacimiento.getDate() == null ||tel.isEmpty()) {
             
-            u.generarMensajeGenerico(this, "/com/capibarashop/resources/capibaraFaltanCampos.png",
+            u.generarMensajeGenerico(this, Utilidades.FALTAN_CAMPOS,
                     "¡Falta campos!",
                     "Revisa que campos faltan para agregarlos",
                     "Registro", JOptionPane.INFORMATION_MESSAGE, 150, 150);
@@ -390,22 +390,34 @@ public class P_Register extends javax.swing.JPanel {
         
         if (!pass1.equals(pass2)) {
             
-            JOptionPane.showMessageDialog(this, "Las contraseñas no coinciden.");
+            u.generarMensajeGenerico(this, Utilidades.FALTAN_CAMPOS,
+                    "¡Las contraseñas no coinciden!",
+                    "Revisa que coincidan, sino no sería una contraseña",
+                    "Registro", JOptionPane.INFORMATION_MESSAGE, 150, 150);
             return;
         }
 
         if (!email.contains("@")) {
-            JOptionPane.showMessageDialog(this, "El correo no es válido.");
+            u.generarMensajeGenerico(this, Utilidades.FALTAN_CAMPOS,
+                    "¡El correo no es válido!",
+                    "Revisa le falta un @ a ese correo",
+                    "Registro", JOptionPane.INFORMATION_MESSAGE, 150, 150);
             return;
         }
 
         if (tel.length() != 10 || !tel.matches("[0-9]+")) {
-            JOptionPane.showMessageDialog(this, "El teléfono debe tener 10 dígitos numéricos.");
+            u.generarMensajeGenerico(this, Utilidades.FALTAN_CAMPOS,
+                    "¡Número de telfono no válido!",
+                    "Revisa que tenga 10 digitos el telefono",
+                    "Registro", JOptionPane.INFORMATION_MESSAGE, 150, 150);
             return;
         }
 
         if (rol == null || rol.getId() == 0) {
-            JOptionPane.showMessageDialog(this, "Selecciona un rol válido.");
+            u.generarMensajeGenerico(this, Utilidades.FALTAN_CAMPOS,
+                    "¡Rol no válido!",
+                    "Selecciona un Rol válido",
+                    "Registro", JOptionPane.INFORMATION_MESSAGE, 150, 150);
             return;
         }
         
@@ -414,27 +426,20 @@ public class P_Register extends javax.swing.JPanel {
 
         UsuarioDAO dao = new UsuarioDAO();
 
-        if(dao.usuarioExiste(usuario)) {
-            JOptionPane.showMessageDialog(this, "El nombre de usuario ya está en uso. Elige otro.");
-            return;
-        }
-
-        if (dao.emailExiste(email)) {
-            JOptionPane.showMessageDialog(this, "Este correo ya está registrado. Usa uno diferente.");
-            return;
-        }
-        
-        if(rol.getId() == 0){
-            JOptionPane.showMessageDialog(this, "Selecciona un rol valido");
+        if(dao.usuarioExiste(usuario) || dao.emailExiste(email)) {
+            u.generarMensajeGenerico(this, Utilidades.USUARIO_CORREO_DUPLICADO,
+                    "¡El correo no es válido!",
+                    "Revisa le falta un @ a ese correo",
+                    "Registro", JOptionPane.INFORMATION_MESSAGE, 150, 150);
             return;
         }
         
         try {
             if (dao.insertarUsuario(nuevo)) {
-                u.generarMensajeGenerico(this, "/com/capibarashop/resources/capibaraRegistroCorrecto.png",
+                u.generarMensajeGenerico(this, Utilidades.REGISTRO_CORRECTO,
                     "¡Felicidades te has registrado correctamente!",
                     "Felicidades, ya tienes una cuenta aqui en CapibaraShop, disfruta de tu cuenta",
-                    "Registro", JOptionPane.INFORMATION_MESSAGE, 120, 120);
+                    "Registro", JOptionPane.INFORMATION_MESSAGE, 150, 150);
                 
                 this.removeAll();
                 this.setLayout(new BorderLayout());
@@ -444,10 +449,10 @@ public class P_Register extends javax.swing.JPanel {
                 
                 // Puedes regresar al login si quieres aquí
             } else {
-                u.generarMensajeGenerico(this, "/com/capibarashop/resources/capibaraError.png",
+                u.generarMensajeGenerico(this, Utilidades.ERROR_FALLO,
                     "¡Hubo un error inesperado!",
                     "No se pudo realizar el registro correctamente",
-                    "Error Inesperado", JOptionPane.ERROR_MESSAGE, 120, 120);
+                    "Error Inesperado", JOptionPane.ERROR_MESSAGE, 150, 150);
             }   
         } catch (SQLException ex) {
             System.getLogger(P_Register.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);

@@ -2,56 +2,55 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JDialog.java to edit this template
  */
-package com.capibarashop.dialogs;
+package com.capibarashop.dialogs.producto;
 
-import com.capibarashop.clases.CategoriaDAO;
+import com.capibarashop.clases.dao.CategoriaDAO;
 import com.capibarashop.clases.Categoria;
 import com.capibarashop.clases.Producto;
-import com.capibarashop.clases.ProductoDAO;
-import com.capibarashop.clases.Usuario;
+import com.capibarashop.clases.dao.ProductoDAO;
 import com.capibarashop.clases.Utilidades;
 import com.capibarashop.swing.ScrollBar;
 import java.awt.Image;
 import java.io.IOException;
-import java.sql.SQLException;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.JSpinner;
-import java.util.List;
 import javax.swing.JFileChooser;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import java.io.File;
 import java.nio.file.Files;
-
 
 /**
  *
  * @author Angel Aimar
  */
-public class DialogAgregarProducto extends javax.swing.JDialog {
+public class DialogActualizarProducto extends javax.swing.JDialog {
     
     private Utilidades u = new Utilidades();
     private byte[] imagenSeleccionada;
+    private Producto productoOriginal;
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(DialogAgregarProducto.class.getName());
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(DialogActualizarProducto.class.getName());
 
     /**
      * Creates new form DialogAgregarProducto
      * @param parent
      * @param modal
      */
-    public DialogAgregarProducto(java.awt.Frame parent, boolean modal) {
+    public DialogActualizarProducto(java.awt.Frame parent, boolean modal, Producto producto) {
         super(parent, modal);
+        this.productoOriginal = producto;
         initComponents();
-        
+
         Utilidades.aplicarScrollCombo(jCBCategoria);
         
-        ImageIcon icon = new ImageIcon(getClass().getResource("/com/capibarashop/resources/capibaraAddProduct.png"));
-        Image img = icon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH); // ← Ajusta tamaño aquí
+        ImageIcon icon = new ImageIcon(getClass().getResource(Utilidades.ACTUALIZAR_PRODUCTO));
+        Image img = icon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
         jLCapibara.setIcon(new ImageIcon(img));
-        cargarCategorias();
+
+        CategoriaDAO.cargarCategorias(jCBCategoria);
+        cargarDatosProducto(); // Luego insertar datos
     }
 
     /**
@@ -91,8 +90,8 @@ public class DialogAgregarProducto extends javax.swing.JDialog {
 
         jLTitulo.setFont(new java.awt.Font("STXinwei", 0, 24)); // NOI18N
         jLTitulo.setForeground(new java.awt.Color(0, 0, 0));
-        jLTitulo.setText("Agregar Nuevo Producto");
-        jPanel1.add(jLTitulo, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 10, 260, -1));
+        jLTitulo.setText("Actualizar Producto");
+        jPanel1.add(jLTitulo, new org.netbeans.lib.awtextra.AbsoluteConstraints(75, 10, 210, -1));
 
         jLCategoria.setFont(new java.awt.Font("STXinwei", 0, 18)); // NOI18N
         jLCategoria.setForeground(new java.awt.Color(0, 0, 0));
@@ -126,6 +125,7 @@ public class DialogAgregarProducto extends javax.swing.JDialog {
         });
         jPanel1.add(jCBCategoria, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 420, 230, 30));
         jPanel1.add(jTFNombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 80, 270, -1));
+        jTFNombre.setText(productoOriginal.getNombre());
 
         jTADescripcion.setColumns(20);
         jTADescripcion.setLineWrap(true);
@@ -134,12 +134,13 @@ public class DialogAgregarProducto extends javax.swing.JDialog {
         jScrollPane1.setViewportView(jTADescripcion);
         jScrollPane1.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         jScrollPane1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-
         jScrollPane1.setVerticalScrollBar(new ScrollBar());
         jScrollPane1.setBorder(javax.swing.BorderFactory.createEmptyBorder());
         jScrollPane1.setViewportBorder(null);
         jScrollPane1.setBorder(javax.swing.BorderFactory.createEmptyBorder());
         jScrollPane1.getVerticalScrollBar().setUnitIncrement(15);
+
+        jTADescripcion.setText(productoOriginal.getDescripcion());
 
         jPanel1.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 280, 250, 130));
 
@@ -153,7 +154,7 @@ public class DialogAgregarProducto extends javax.swing.JDialog {
         jPanel1.add(jBGuardar, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 460, 130, -1));
         jPanel1.add(jLCapibara, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 50, 50));
         jPanel1.add(jSStock, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 140, 110, -1));
-        jSStock.setModel(new SpinnerNumberModel(0, 0, 10000, 1));
+        jSStock.setModel(new SpinnerNumberModel(productoOriginal.getStock(), 0, 10000, 1));
 
         jSPrecio.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
@@ -161,7 +162,7 @@ public class DialogAgregarProducto extends javax.swing.JDialog {
             }
         });
         jPanel1.add(jSPrecio, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 110, 140, -1));
-        jSPrecio.setModel(new SpinnerNumberModel(0, 0.00, 999999.99, 0.01));
+        jSPrecio.setModel(new SpinnerNumberModel(productoOriginal.getPrecio(), 0.00, 999999.99, 0.01));
         JSpinner.NumberEditor editor = new JSpinner.NumberEditor(jSPrecio, "$#,##0.00");
         jSPrecio.setEditor(editor);
 
@@ -210,96 +211,113 @@ public class DialogAgregarProducto extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jBGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBGuardarActionPerformed
-        // TODO add your handling code here:
-        
-        Categoria categoria = (Categoria) jCBCategoria.getSelectedItem();
-        
-        if (jTFNombre.getText().isBlank()) {
-            JOptionPane.showMessageDialog(this, "El nombre es obligatorio");
-            return;
+    
+    private void cargarDatosProducto() {
+        jTFNombre.setText(productoOriginal.getNombre());
+        jSPrecio.setValue(productoOriginal.getPrecio());
+        jSStock.setValue(productoOriginal.getStock());
+        jTADescripcion.setText(productoOriginal.getDescripcion());
+        imagenSeleccionada = productoOriginal.getImagen();
+
+        if (imagenSeleccionada != null) {
+            ImageIcon icono = new ImageIcon(imagenSeleccionada);
+            Image img = icono.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+            jLImagenMostrar.setIcon(new ImageIcon(img));
         }
-        
-//        if(((Integer) jSStock.getValue() <= 0)){
-//            JOptionPane.showMessageDialog(this, "El Stock tiene que ser mayor a 0");
-//            return;
-//        }
-        
-        if(((Double) jSPrecio.getValue() <= 0.00)){
-            JOptionPane.showMessageDialog(this, "El Precio tiene que ser mayor a $0.00");
-            return;
+
+        // Seleccionar categoría actual
+        for (int i = 0; i < jCBCategoria.getItemCount(); i++) {
+            Categoria c = jCBCategoria.getItemAt(i);
+            if (c.getId() == productoOriginal.getCategoria().getId()) {
+                jCBCategoria.setSelectedIndex(i);
+                break;
+            }
         }
-        
-        if(jTADescripcion.getText().isBlank()){
-            JOptionPane.showMessageDialog(this, "El Campo Descripción es obligatorio");
-            return;
+    }
+
+    private void seleccionarImagen() {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Seleccionar imagen del producto");
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Imágenes", "jpg", "jpeg", "png");
+        fileChooser.setFileFilter(filter);
+
+        int resultado = fileChooser.showOpenDialog(this);
+        if (resultado == JFileChooser.APPROVE_OPTION) {
+            try {
+                imagenSeleccionada = Files.readAllBytes(fileChooser.getSelectedFile().toPath());
+                ImageIcon icono = new ImageIcon(imagenSeleccionada);
+                Image imagen = icono.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+                jLImagenMostrar.setIcon(new ImageIcon(imagen));
+            } catch (IOException ex) {
+                u.generarMensajeGenerico(this, Utilidades.ERROR_FALLO,
+                    "¡Hubo un error inesperado!",
+                    "No se pudo cargar la imagen",
+                    "Error Inesperado", JOptionPane.ERROR_MESSAGE, 150, 150);
+            }
         }
-        
-        if (categoria == null || categoria.getId() == 0) {
-            JOptionPane.showMessageDialog(this, "Por favor selecciona una categoría válida.");
-            return;
-        }
-        
+    }
+
+    private void guardarCambios() {
         String nombre = jTFNombre.getText();
         Double precio = (Double) jSPrecio.getValue();
         int stock = (Integer) jSStock.getValue();
         String descripcion = jTADescripcion.getText();
-        
-        //String nombre, double precio, String descripcion, int stock, byte[] imagen, Categoria categoria, Usuario usuario
-        if(Usuario.getUsuarioActual().getId() !=0 ){
-            
-            Producto productoNuevo;
-            
-            if(imagenSeleccionada != null){
-                productoNuevo = new Producto(nombre, precio, descripcion, stock, imagenSeleccionada, categoria, 
-                        Usuario.getUsuarioActual());
-            }
-            else{
-                productoNuevo = new Producto(nombre, precio, descripcion, stock, categoria, Usuario.getUsuarioActual());
+        Categoria categoria = (Categoria) jCBCategoria.getSelectedItem();
+
+        if (nombre.isEmpty() || descripcion.isEmpty() || precio <= 0.00 || categoria == null || categoria.getId() == 0) {
+            StringBuilder errores = new StringBuilder("Corrige los siguientes campos:\n");
+
+            if (nombre.isEmpty()) {
+                errores.append("- El nombre es obligatorio.\n");
             }
             
-        
-            ProductoDAO dao = new ProductoDAO();
-            try {
-                if (dao.insertarProducto(productoNuevo)) {
-                    u.generarMensajeGenerico(this, "/com/capibarashop/resources/capibaraAddProduct.png",
-                        "¡Se ha agreado un producto con exito!",
-                        "El producto " + productoNuevo.getNombre() + " se ha agregado con exito.",
-                        "Agregar Producto", JOptionPane.INFORMATION_MESSAGE, 120, 120);
-                    dispose();
-                } else {
-                    u.generarMensajeGenerico(this, "/com/capibarashop/resources/capibaraError.png",
-                        "¡Hubo un error inesperado!",
-                        "Revisa que los datos esten bien declarados porque no se Agregó el producto",
-                        "Error Inesperado", JOptionPane.ERROR_MESSAGE, 120, 120);
-                }
-            } catch (SQLException e) {
-                u.generarMensajeGenerico(this, "/com/capibarashop/resources/capibaraError.png",
-                        "¡Hubo un error inesperado!",
-                        "Error al guardar: " + e.getMessage(),
-                        "Error Inesperado", JOptionPane.ERROR_MESSAGE, 120, 120);
+            if (precio <= 0.00) {
+                errores.append("- El precio debe ser mayor a $0.00.\n");
             }
+            
+            if (descripcion.isEmpty()) {
+                errores.append("- La descripción es obligatoria.\n");
+            }
+            
+            if (categoria == null || categoria.getId() == 0){
+                errores.append("- Selecciona una categoría válida.\n");
+            }
+            
+            if (stock < 0) {
+                errores.append("- El stock no puede ser negativo.\n");
+            }
+            
+            u.generarMensajeGenerico(this, Utilidades.FALTAN_CAMPOS,
+                    "¡Faltan los siguientes Campos!",
+                    errores.toString(),
+                    "Agregar Producto", JOptionPane.INFORMATION_MESSAGE, 150, 150);
+            return;
         }
-        else{
-            u.generarMensajeGenerico(this, "/com/capibarashop/resources/capibaraError.png",
-                        "¡Hubo un error inesperado!",
-                        "Error al guardar.",
-                        "Error Inesperado", JOptionPane.ERROR_MESSAGE, 120, 120);
+
+        productoOriginal.setNombre(nombre);
+        productoOriginal.setPrecio(precio);
+        productoOriginal.setStock(stock);
+        productoOriginal.setDescripcion(descripcion);
+        productoOriginal.setCategoria(categoria);
+        productoOriginal.setImagen(imagenSeleccionada);
+
+        ProductoDAO dao = new ProductoDAO();
+        if (dao.actualizarProducto(productoOriginal)) {
+            u.generarMensajeGenerico(this, Utilidades.ACTUALIZAR_PRODUCTO,
+                "¡Actualización exitosa!", "El producto fue actualizado correctamente.", "Actualizado", JOptionPane.INFORMATION_MESSAGE, 150, 150);
+            dispose();
+        } else {
+            u.generarMensajeGenerico(this, Utilidades.ERROR_FALLO,
+                "¡Error al actualizar!", "Ocurrió un error al guardar los cambios.", "Error", JOptionPane.ERROR_MESSAGE, 150, 150);
         }
+    }
+ 
+    private void jBGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBGuardarActionPerformed
+        // TODO add your handling code here:
+        guardarCambios();
+        this.dispose();
     }//GEN-LAST:event_jBGuardarActionPerformed
 
-    private void cargarCategorias(){
-        CategoriaDAO dao = new CategoriaDAO();
-        List<Categoria> categorias = dao.listarCategorias();
-
-        jCBCategoria.removeAllItems();
-        jCBCategoria.addItem(new Categoria(0, "Selecciona una categoría..."));
-
-        for (Categoria c : categorias) {
-            jCBCategoria.addItem(c);
-        }
-        
-    }
     
     private void jSPrecioFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jSPrecioFocusLost
         // TODO add your handling code here:
@@ -323,31 +341,6 @@ public class DialogAgregarProducto extends javax.swing.JDialog {
         
     }//GEN-LAST:event_jBSeleccionarImagenActionPerformed
 
-    private void seleccionarImagen() {
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Seleccionar imagen del producto");
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("Imágenes", "jpg", "jpeg", "png");
-        fileChooser.setFileFilter(filter);
-
-        int resultado = fileChooser.showOpenDialog(this);
-
-        if (resultado == JFileChooser.APPROVE_OPTION) {
-            File archivo = fileChooser.getSelectedFile();
-
-            try {
-                imagenSeleccionada = Files.readAllBytes(archivo.toPath());
-                
-                // Mostrar vista previa
-                ImageIcon icono = new ImageIcon(imagenSeleccionada);
-                Image imagen = icono.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
-                jLImagenMostrar.setIcon(new ImageIcon(imagen));
-
-            } catch (IOException e) {
-                JOptionPane.showMessageDialog(this, "No se pudo cargar la imagen: " + e.getMessage(),
-                        "Error de imagen", JOptionPane.ERROR_MESSAGE);
-            }
-        }
-    }
     
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

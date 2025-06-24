@@ -51,7 +51,7 @@
         </DimensionLayout>
       </Layout>
       <SubComponents>
-        <Component class="com.capibarashop.swing.Panel_Login_Register" name="panel_Login_Register1">
+        <Component class="com.capibarashop.swing.panel.Panel_Login_Register" name="panel_Login_Register1">
         </Component>
       </SubComponents>
     </Container>

@@ -49,4 +49,13 @@ public class EstilosBotones {
         boton.setForeground(Color.DARK_GRAY); // texto más tenue
         boton.setBorder(BorderFactory.createLineBorder(Color.GRAY));
     }
+    
+    public static void aplicarEstiloInformativo(JButton boton, int fontSize) {
+        boton.setBackground(new Color(59, 130, 246)); // Azul claro
+        boton.setForeground(Color.WHITE);
+        boton.setFont(new Font("SansSerif", Font.BOLD, fontSize));
+        boton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+        boton.setFocusPainted(false);
+    }
+    
 }

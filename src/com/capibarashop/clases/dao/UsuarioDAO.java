@@ -2,7 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.capibarashop.clases;
+package com.capibarashop.clases.dao;
+import com.capibarashop.clases.Conexion;
+import com.capibarashop.clases.Rol;
+import com.capibarashop.clases.Usuario;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +52,7 @@ public class UsuarioDAO {
                     return construirUsuario(rs);
                 }
             } catch(SQLException e){
-                JOptionPane.showMessageDialog(null, "Error" + e.getMessage(), "Hubo un error al guardar.", JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
             }
         return null;
     }
@@ -71,8 +74,7 @@ public class UsuarioDAO {
             
             return ps.executeUpdate() > 0;
         } catch(SQLException e){
-            JOptionPane.showMessageDialog(null, "Error al insertar el usuario" + e.getMessage(), "Hubo un error al guardar", 
-                    JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
             return false;
         }
     }
@@ -89,7 +91,7 @@ public class UsuarioDAO {
             }
         
         }catch (SQLException e) {
-            System.out.println("Error al verificar existencia de usuario: " + e.getMessage());
+            e.printStackTrace();
             return true; // Por seguridad, bloquea si hay error
         }
     }
@@ -110,7 +112,7 @@ public class UsuarioDAO {
                     return construirUsuario(rs);
                 }
             } catch(SQLException e){
-                JOptionPane.showMessageDialog(null, "Error" + e.getMessage(), "Hubo un error al guardar.", JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
             }
         return null;
     }
@@ -127,7 +129,7 @@ public class UsuarioDAO {
             }
         
         }catch (SQLException e) {
-            System.out.println("Error al verificar existencia de email: " + e.getMessage());
+            e.printStackTrace();
             return true; // Por seguridad, bloquea si hay error
         }
     }
@@ -149,6 +151,59 @@ public class UsuarioDAO {
         }
         
         return lista;
+    }
+    
+    public boolean actualizarUsuario(Usuario u) {
+        String sql = """
+            UPDATE Usuarios
+            SET usuarioNombre = ?, nombre = ?, email = ?, tel = ?, fechaNacimiento = ?, contrasena = ?
+            WHERE id_Usuario = ?
+        """;
+
+        try (Connection con = Conexion.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, u.getUsuarioNombre());
+            ps.setString(2, u.getNombre());
+            ps.setString(3, u.getEmail());
+            ps.setString(4, u.getTel());
+            ps.setDate(5, u.getFechaNacimiento());
+            ps.setString(6, u.getContrasena());
+            ps.setInt(7, u.getId());
+            
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    public boolean usuarioExisteOtro(String usuarioNombre, int idActual) {
+        String sql = "SELECT COUNT(*) FROM Usuarios WHERE usuarioNombre = ? AND id_Usuario != ?";
+        try (Connection con = Conexion.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, usuarioNombre);
+            ps.setInt(2, idActual);
+            ResultSet rs = ps.executeQuery();
+            return rs.next() && rs.getInt(1) > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return true;
+        }
+    }
+
+    public boolean emailExisteOtro(String email, int idActual) {
+        String sql = "SELECT COUNT(*) FROM Usuarios WHERE email = ? AND id_Usuario != ?";
+        try (Connection con = Conexion.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, email);
+            ps.setInt(2, idActual);
+            ResultSet rs = ps.executeQuery();
+            return rs.next() && rs.getInt(1) > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return true;
+        }
     }
     
 }

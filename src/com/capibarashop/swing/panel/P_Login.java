@@ -2,10 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package com.capibarashop.swing;
+package com.capibarashop.swing.panel;
 
 import com.capibarashop.clases.Usuario;
-import com.capibarashop.clases.UsuarioDAO;
+import com.capibarashop.clases.dao.UsuarioDAO;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
@@ -31,7 +31,7 @@ public class P_Login extends javax.swing.JPanel {
      */
     public P_Login() {
         initComponents(); //570, 430
-        ImageIcon icon = new ImageIcon(getClass().getResource("/com/capibarashop/resources/capibara.png"));
+        ImageIcon icon = new ImageIcon(getClass().getResource(Utilidades.LOGO_CAPIBARA));
         Image img = icon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH); // ← Ajusta tamaño aquí
         jLCapibara.setIcon(new ImageIcon(img));
         this.setPreferredSize(new java.awt.Dimension(570, 430));
@@ -197,11 +197,10 @@ public class P_Login extends javax.swing.JPanel {
         try {
             Panel_Login_Register.cambiarContenido(parent, 2);
         } catch (SQLException e) {
-            e.printStackTrace();
-            u.generarMensajeGenerico(parent, "/com/capibarashop/resources/capibaraError.png",
+            u.generarMensajeGenerico(parent, Utilidades.ERROR_FALLO,
             "¡Hubo un error inesperado!",
             "Error al cargar el Registro: " + e.getMessage(),
-            "Error Inesperado",JOptionPane.ERROR_MESSAGE, 120, 120);
+            "Error Inesperado",JOptionPane.ERROR_MESSAGE, 150, 150);
         }
         parent.revalidate();
         parent.repaint();
@@ -215,10 +214,11 @@ public class P_Login extends javax.swing.JPanel {
         UsuarioDAO dao = new UsuarioDAO();
         
         try {
-            Usuario nuevo = dao.login(user, pass);
+            Usuario nuevo = dao.login(user, pass); 
+            //Usuario nuevo = dao.login("AimarC", "123456"); //Para Pruebas con Usuario
             if (nuevo != null) {
-                u.generarMensajeGenerico(this, "/com/capibarashop/resources/capibaraCliente.png", "¡Bienvenido " + nuevo.getNombre() + "!", 
-                        "Espero que tengas una buena estadia en CapibaraShop, disfrutalo", "Bienvenida", JOptionPane.INFORMATION_MESSAGE, 120, 120);
+                u.generarMensajeGenerico(this, Utilidades.IMG_USUARIO, "¡Bienvenido " + nuevo.getNombre() + "!", 
+                        "Espero que tengas una buena estadia en CapibaraShop, disfrutalo", "Bienvenida", JOptionPane.INFORMATION_MESSAGE, 150, 150);
                 Usuario.setUsuarioActual(nuevo);
                 //JOptionPane.showMessageDialog(this, "El id del usuario es: " + Usuario.getUsuarioActual().getId());
                 JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
@@ -236,9 +236,9 @@ public class P_Login extends javax.swing.JPanel {
                     else
                     main = new JFrame("Panel de Productos del vendedor");
                     
-                    main.setContentPane(new P_ProductosAdmin());
+                    main.setContentPane(new P_AplicacionAdminVendedor());
                     main.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                    main.setSize(890, 700);
+                    main.setSize(940, 700);
                     main.setLocationRelativeTo(null);
                     main.setVisible(true);
                 }
@@ -246,20 +246,24 @@ public class P_Login extends javax.swing.JPanel {
                     //Clientes
                     
                     JFrame main = new JFrame("Panel de Productos Cliente");
-
+                    main.setContentPane(new P_AplicacionCliente());
+                    main.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                    main.setSize(880, 750);
+                    main.setLocationRelativeTo(null);
+                    main.setVisible(true);
                 }
 
             } else {
-                u.generarMensajeGenerico(this, "/com/capibarashop/resources/capibaraError.png",
+                u.generarMensajeGenerico(this, Utilidades.ERROR_FALLO,
                     "¡Hubo un error inesperado!",
                     "Error al iniciar sesion",
-                    "Error Inesperado", JOptionPane.ERROR_MESSAGE, 120, 120);
+                    "Error Inesperado", JOptionPane.ERROR_MESSAGE, 150, 150);
             }
         } catch (SQLException e) {
-            u.generarMensajeGenerico(this, "/com/capibarashop/resources/capibaraError.png",
+            u.generarMensajeGenerico(this, Utilidades.ERROR_FALLO,
                     "¡Hubo un error inesperado!",
                     "Error al iniciar sesion: " + e.getMessage(),
-                    "Error Inesperado", JOptionPane.ERROR_MESSAGE, 120, 120);
+                    "Error Inesperado", JOptionPane.ERROR_MESSAGE, 150, 150);
         }
 
     }//GEN-LAST:event_jButtonLoginActionPerformed
