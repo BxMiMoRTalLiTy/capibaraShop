@@ -23,7 +23,7 @@ public class ProductoDAO {
         
         p.setId(rs.getInt("id_Producto"));
         p.setNombre(rs.getString("nombre"));
-        p.setPrecio(rs.getDouble("precio"));
+        p.setPrecio(rs.getBigDecimal("precio"));
         p.setDescripcion(rs.getString("descripcion"));
         p.setStock(rs.getInt("stock"));
         p.setImagen(rs.getBytes("imagen"));
@@ -52,7 +52,7 @@ public class ProductoDAO {
         try(Connection con = Conexion.getConexion();
             PreparedStatement ps = con.prepareStatement(sql)){
                 ps.setString(1, p.getNombre());
-                ps.setDouble(2, p.getPrecio());
+                ps.setBigDecimal(2, p.getPrecio());
                 ps.setString(3, p.getDescripcion());
                 ps.setInt(4, p.getStock());
                 ps.setBytes(5, p.getImagen());
@@ -135,32 +135,6 @@ public class ProductoDAO {
         //System.err.println("Producto es null incluso después de intentar construirlo. ID: " + idProducto);
         return null;
     }
-    
-    
-//    public Producto buscarProductoIDyUsuario(int idProducto, int idUsuario){
-//        String sql = """
-//                SELECT * FROM Productos
-//                WHERE id_Producto = ? AND id_Usuario = ?
-//            """;
-//        try (Connection con = Conexion.getConexion();
-//             PreparedStatement ps = con.prepareStatement(sql)) {
-//
-//            ps.setInt(1, idProducto);
-//            ps.setInt(2, idUsuario);
-//
-//            ResultSet rs = ps.executeQuery();
-//
-//            if (rs.next()) {
-//                return construirProducto(rs);
-//            }
-//
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//
-//        return null;
-//    }
-    
     
     //Para cualquier usuario
     public List<Producto> listarProductosPorUsuario() throws SQLException {
@@ -296,7 +270,7 @@ public class ProductoDAO {
         try(Connection con = Conexion.getConexion();
             PreparedStatement ps = con.prepareStatement(sql)){
                 ps.setString(1, p.getNombre());
-                ps.setDouble(2, p.getPrecio());
+                ps.setBigDecimal(2, p.getPrecio());
                 ps.setString(3, p.getDescripcion());
                 ps.setInt(4, p.getStock());
                 ps.setBytes(5, p.getImagen());
@@ -340,7 +314,7 @@ public class ProductoDAO {
                 Producto producto = new Producto(
                     rs.getInt("id_Producto"),
                     rs.getString("nombre"),
-                    rs.getDouble("precio"),
+                    rs.getBigDecimal("precio"),
                     rs.getString("descripcion"),
                     rs.getInt("stock"),
                     categoria,

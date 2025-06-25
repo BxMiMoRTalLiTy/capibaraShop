@@ -8,6 +8,7 @@ import com.capibarashop.clases.Carrito;
 import com.capibarashop.clases.Conexion;
 import com.capibarashop.clases.DetalleCarrito;
 import com.capibarashop.clases.Producto;
+import com.capibarashop.clases.Utilidades;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,8 @@ import javax.swing.JOptionPane;
  * @author Angel Aimar
  */
 public class CarritoDAO {
+    
+    Utilidades u = new Utilidades();
     
     public int crearCarrito(int idUsuario) {
         int idCarrito = obtenerCarritoActivoID(idUsuario);
@@ -47,6 +50,20 @@ public class CarritoDAO {
 
         return -1; // Error
     }
+    
+//    public Carrito obtenerOCrearCarritoActivo(int idUsuario) {
+//        Carrito carrito = obtenerCarritoActivo(idUsuario);
+//        if (carrito != null) {
+//            return carrito;
+//        }
+//        
+//        int idNuevo = crearCarrito(idUsuario);
+//        if (idNuevo != -1) {
+//            return new Carrito(idNuevo, idUsuario, true);
+//        }
+//
+//        return null;
+//    }
 
     public Carrito obtenerCarritoActivo(int idUsuario) {
         String sql = "SELECT * FROM Carritos WHERE id_Usuario = ? AND activo = 1";
@@ -103,16 +120,25 @@ public class CarritoDAO {
         String sqlCheck = "SELECT * FROM Detalle_Carrito WHERE id_Carrito = ? AND id_Producto = ?";
         String sqlInsert = "INSERT INTO Detalle_Carrito (id_Carrito, id_Producto, cantidad) VALUES (?, ?, ?)";
         String sqlUpdateStock = "UPDATE Productos SET stock = stock - ? WHERE id_Producto = ? AND stock >= ?";
+        String sqlUpdateCantidad = "UPDATE Detalle_Carrito SET cantidad = cantidad + ? WHERE id_Carrito = ? AND id_Producto = ?";
         
         try (Connection con = Conexion.getConexion()) {
-            // Verificar si ya existe
+            boolean existe = false;
+            ProductoDAO productoDAO = new ProductoDAO();
+            Producto producto = productoDAO.obtenerPorId(idProducto);
+
+            // Verificar existencia
             try (PreparedStatement psCheck = con.prepareStatement(sqlCheck)) {
                 psCheck.setInt(1, idCarrito);
                 psCheck.setInt(2, idProducto);
                 ResultSet rs = psCheck.executeQuery();
                 if (rs.next()) {
-                    JOptionPane.showMessageDialog(null, "Este producto ya está en el carrito.");
-                    return false;
+                    existe = true;
+                    if (!u.generarOptionYes_NoDisenoProducto(null, producto, 
+                        "Este producto ya está en el carrito \n ¿Deseas agregar más unidades?", 
+                        "Agregar más cantidad", cantidad)) {
+                        return false;
+                    }
                 }
             }
 
@@ -120,26 +146,34 @@ public class CarritoDAO {
             try (PreparedStatement psStock = con.prepareStatement(sqlUpdateStock)) {
                 psStock.setInt(1, cantidad);
                 psStock.setInt(2, idProducto);
-                psStock.setInt(3, cantidad); // Verifica que hay stock suficiente
-
-                int actualizado = psStock.executeUpdate();
-                if (actualizado == 0) {
+                psStock.setInt(3, cantidad);
+                if (psStock.executeUpdate() == 0) {
                     JOptionPane.showMessageDialog(null, "No hay suficiente stock.");
                     return false;
                 }
             }
 
-            // Insertar en el carrito
-            try (PreparedStatement psInsert = con.prepareStatement(sqlInsert)) {
-                psInsert.setInt(1, idCarrito);
-                psInsert.setInt(2, idProducto);
-                psInsert.setInt(3, cantidad);
-                return psInsert.executeUpdate() > 0;
+            // Insertar o actualizar en Detalle_Carrito
+            if (existe) {
+                 try (PreparedStatement psUpdate = con.prepareStatement(sqlUpdateCantidad)) {
+                    psUpdate.setInt(1, cantidad);
+                    psUpdate.setInt(2, idCarrito);
+                    psUpdate.setInt(3, idProducto);
+                    return psUpdate.executeUpdate() > 0;
+                }
+            } else {
+                try (PreparedStatement psInsert = con.prepareStatement(sqlInsert)) {
+                    psInsert.setInt(1, idCarrito);
+                    psInsert.setInt(2, idProducto);
+                    psInsert.setInt(3, cantidad);
+                    return psInsert.executeUpdate() > 0;
+                }
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
+
         }
     }
     
@@ -204,7 +238,7 @@ public class CarritoDAO {
                 Producto producto = new Producto();
                 producto.setId(rs.getInt("id_Producto"));
                 producto.setNombre(rs.getString("nombre"));
-                producto.setPrecio(rs.getDouble("precio"));
+                producto.setPrecio(rs.getBigDecimal("precio"));
                 producto.setDescripcion(rs.getString("descripcion"));
                 producto.setImagen(rs.getBytes("imagen"));
 

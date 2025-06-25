@@ -8,9 +8,13 @@ import com.capibarashop.clases.Categoria;
 import com.capibarashop.clases.Conexion;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import javax.swing.JComboBox;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -77,16 +81,29 @@ public class CategoriaDAO {
         }
     }
     
-    public static void cargarCategorias(JComboBox j){
+    public static void cargarategorias(JComboBox j, String mensaje){
         CategoriaDAO dao = new CategoriaDAO();
         List<Categoria> categorias = dao.listarCategorias();
         
+        categorias.sort(Comparator.comparingInt(Categoria :: getId));
+        
         j.removeAllItems();
-        j.addItem(new Categoria(0, "Selecciona una categoría..."));
+        j.addItem(new Categoria(0, mensaje));
         
         for (Categoria c : categorias) {
             j.addItem(c);
         }
+        
+        SwingUtilities.invokeLater(() -> {
+            Object comp = j.getUI().getAccessibleChild(j, 0);
+            if (comp instanceof javax.swing.plaf.basic.ComboPopup popup) {
+                JList<?> list = popup.getList();
+                JScrollPane scrollPane = (JScrollPane) SwingUtilities.getAncestorOfClass(JScrollPane.class, list);
+                if (scrollPane != null) {
+                    scrollPane.getVerticalScrollBar().setUnitIncrement(30);
+                }
+            }
+        });
     }
     
     public boolean insertarCategoria(Categoria c) throws SQLException{

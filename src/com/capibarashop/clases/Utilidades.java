@@ -4,19 +4,30 @@
  */
 package com.capibarashop.clases;
 
+import com.capibarashop.clases.dao.CategoriaDAO;
 import com.capibarashop.swing.ScrollBar;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.geom.AffineTransform;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.util.Comparator;
+import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
+import javax.swing.JEditorPane;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
@@ -48,6 +59,7 @@ public class Utilidades {
     public static final String CATEGORIA_AGREGAR = "/com/capibarashop/resources/capibaraAddCategori.png";
     public static final String USUARIO_EDITOR_DESACTIVADO = "/com/capibarashop/resources/capibaraEdicionDesactivada.png";
     public static final String USUARIO_ACTUALIZADO = "/com/capibarashop/resources/capibaraUpdateUser.png";
+    public static final String CARRITO_AGREGANDO_PRODUCTO = "/com/capibarashop/resources/capibaraSeleccionandoProducto.png";
     
     public static String generarHTMLProducto(Producto p) {
         return "<html>"
@@ -74,6 +86,72 @@ public class Utilidades {
             """, tituloTexto, texto);
         JOptionPane.showMessageDialog(parent, mensaje, tituloJOpcionPane, tipo, icono);
     }    
+    
+    public boolean generarOptionYes_NoDisenoProducto(Container parent, Producto p, String titulo, String textoPane, int cantidad){
+        String imagenURL = guardarImagenTemporal(p.getImagen(), p.getId());
+        
+        if(imagenURL == null){
+            imagenURL = "";
+        }
+
+        String mensaje = String.format("""
+            <html>
+              <head>
+                <style>
+                  body { font-family: Arial, sans-serif; }
+                        h3 { color: #5D3FD3; margin-top: 0; }
+                        table {
+                          width: 100%%;
+                          border-collapse: collapse;
+                          margin-top: 10px;
+                        }
+                        td {
+                          padding: 5px;
+                          border: 1px solid #ccc;
+                          vertical-align: top;
+                        }
+                        td:first-child {
+                          font-weight: bold;
+                          background-color: #f0f0f0;
+                          width: 100px;
+                        }
+                        .desc {
+                          max-height: 100px;
+                          overflow-y: auto;
+                        }
+                </style>
+              </head>
+              <body>
+                <h3>%s</h3>
+                <table>
+                  <tr><td>Nombre</td><td>%s</td></tr>
+                  <tr><td>Precio</td><td>$%.2f</td></tr>
+                  <tr><td>Cantidad</td><td>%d</td></tr>
+                  <tr><td>Descripción</td><td class="desc">%s</td></tr>
+                  <tr><td>Imagen</td><td><img src="%s" width="100" height="100"/></td></tr>
+                </table>
+              </body>
+            </html>
+            """, 
+                titulo,
+                p.getNombre(),
+                p.getPrecio().doubleValue(),
+                cantidad,
+                p.getDescripcion().replace("\n", "<br>"),
+                imagenURL
+            );
+        
+        JEditorPane editorPane = new JEditorPane("text/html", mensaje);
+        editorPane.setEditable(false);
+        editorPane.setCaretPosition(0);
+
+        JScrollPane scrollPane = new JScrollPane(editorPane);
+        scrollPane.setPreferredSize(new Dimension(450, 250));
+        
+        int confirmacion = JOptionPane.showConfirmDialog(parent, scrollPane, textoPane, JOptionPane.YES_NO_OPTION);
+        
+        return (confirmacion == JOptionPane.YES_OPTION);
+    }
     
     public void generarJOptionPaneImagen(Container parent, String urlIcono, String tituloJOpcionPane, int tipo, int anchura, int altura){
         ImageIcon icono = escalarIconoConDPI(urlIcono, anchura, altura);
@@ -110,11 +188,73 @@ public class Utilidades {
                     Component scroll = popup.getComponent(0);
                     if (scroll instanceof JScrollPane scrollPane) {
                         scrollPane.setVerticalScrollBar(new ScrollBar());
+                        scrollPane.getVerticalScrollBar().setUnitIncrement(30);
                     }
                 }
             }
             public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {}
             public void popupMenuCanceled(PopupMenuEvent e) {}
+        });
+    }
+    
+    public String guardarImagenTemporal(byte[] datosImagen, int idProducto) {
+        try {
+            // Si no hay imagen proporcionada, carga la imagen por defecto desde recursos
+            if (datosImagen == null) {
+                InputStream is = getClass().getResourceAsStream(Utilidades.DEFAULT_PRODUCTO);
+                if (is != null) {
+                    datosImagen = is.readAllBytes();
+                } else {
+                    System.err.println("Imagen por defecto no encontrada.");
+                    return null;
+                }
+            }
+
+            // Crear directorio si no existe
+            File tempDir = new File("temp/imagenes");
+            if (!tempDir.exists()) tempDir.mkdirs();
+            
+            // Guardar archivo temporalmente
+            File imagenFile = new File(tempDir, "producto_" + idProducto + ".png");
+            Files.write(imagenFile.toPath(), datosImagen);
+            return imagenFile.toURI().toURL().toString(); // Ruta accesible por HTML
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
+    public static <T> void cargarJComboBox(
+        JComboBox<T> comboBox,
+        List<T> elementos,
+        T elementoInicial,
+        Comparator<T> comparator,
+        String mensajeInicial
+    ) {
+        comboBox.removeAllItems();
+
+        if (mensajeInicial != null && elementoInicial != null) {
+            comboBox.addItem(elementoInicial);
+        }
+
+        if (comparator != null) {
+            elementos.sort(comparator);
+        }
+
+        for (T item : elementos) {
+            comboBox.addItem(item);
+        }
+
+        // Aumentar velocidad del scroll
+        SwingUtilities.invokeLater(() -> {
+            Object comp = comboBox.getUI().getAccessibleChild(comboBox, 0);
+            if (comp instanceof javax.swing.plaf.basic.ComboPopup popup) {
+                JList<?> list = popup.getList();
+                JScrollPane scrollPane = (JScrollPane) SwingUtilities.getAncestorOfClass(JScrollPane.class, list);
+                if (scrollPane != null) {
+                    scrollPane.getVerticalScrollBar().setUnitIncrement(30);
+                }
+            }
         });
     }
     

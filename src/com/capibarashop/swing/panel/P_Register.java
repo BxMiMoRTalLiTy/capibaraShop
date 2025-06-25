@@ -16,6 +16,7 @@ import java.awt.Image;
 import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import java.sql.Date;
+import java.util.Comparator;
 import java.util.List;
 import javax.swing.ImageIcon;
 
@@ -36,9 +37,18 @@ public class P_Register extends javax.swing.JPanel {
         
         Utilidades.aplicarScrollCombo(jcbRol);
         
+        UsuarioDAO dao = new UsuarioDAO();
+        List<Rol> roles = dao.obtenerRoles();
+        Rol rolInicial = new Rol(0, "Elegir");
+            Utilidades.cargarJComboBox(
+            jcbRol,                  
+            roles,                    
+            rolInicial,              
+            Comparator.comparing(Rol::getId), 
+            "Elegir"        
+            );
         
-        cargarRoles();
-        ImageIcon icon = new ImageIcon(getClass().getResource("/com/capibarashop/resources/capibara.png"));
+        ImageIcon icon = new ImageIcon(getClass().getResource(Utilidades.LOGO_CAPIBARA));
         Image img = icon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH); // ← Ajusta tamaño aquí
         jLCapibara.setIcon(new ImageIcon(img));
         this.setPreferredSize(new java.awt.Dimension(570, 430));
@@ -428,8 +438,8 @@ public class P_Register extends javax.swing.JPanel {
 
         if(dao.usuarioExiste(usuario) || dao.emailExiste(email)) {
             u.generarMensajeGenerico(this, Utilidades.USUARIO_CORREO_DUPLICADO,
-                    "¡El correo no es válido!",
-                    "Revisa le falta un @ a ese correo",
+                    "¡El correo o el Usuario ya existen!",
+                    "Elige otro usuario y/o otro correo porque ya existen",
                     "Registro", JOptionPane.INFORMATION_MESSAGE, 150, 150);
             return;
         }
@@ -460,22 +470,22 @@ public class P_Register extends javax.swing.JPanel {
     
     }//GEN-LAST:event_jButtonRegisterActionPerformed
 
-    private void cargarRoles(){
-        UsuarioDAO dao = new UsuarioDAO();
-        List<Rol> roles;
-        
-        try {
-            roles = dao.obtenerRoles();
-            jcbRol.removeAllItems();
-            jcbRol.addItem(new Rol(0, "Elegir"));
-        
-            for(Rol rol : roles){
-                jcbRol.addItem(rol);
-            }
-        } catch (SQLException ex) {
-            System.getLogger(P_Register.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-        }
-    }
+//    private void cargarRoles(){
+//        UsuarioDAO dao = new UsuarioDAO();
+//        List<Rol> roles;
+//        
+//        try {
+//            roles = dao.obtenerRoles();
+//            jcbRol.removeAllItems();
+//            jcbRol.addItem(new Rol(0, "Elegir"));
+//        
+//            for(Rol rol : roles){
+//                jcbRol.addItem(rol);
+//            }
+//        } catch (SQLException ex) {
+//            System.getLogger(P_Register.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+//        }
+//    }
     
    
     

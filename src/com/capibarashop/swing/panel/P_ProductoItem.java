@@ -18,8 +18,10 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.BorderFactory;
 import javax.swing.SwingConstants;
 import java.awt.Color;
+import java.awt.Container;
 import java.awt.Font;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 
 /**
@@ -29,6 +31,8 @@ import javax.swing.JOptionPane;
 public class P_ProductoItem extends javax.swing.JPanel {
     
     private Producto producto = new Producto();
+    private Utilidades u = new Utilidades();
+    
     /**
      * Creates new form P_Producto
      */
@@ -192,29 +196,33 @@ public class P_ProductoItem extends javax.swing.JPanel {
         ProductoDAO dao = new ProductoDAO();
         Producto productoActualizado = dao.obtenerPorId(producto.getId());
         
-        // Validación extra de cantidad
-        System.out.println("Cantidad seleccionada: " + cantidad + " | Stock disponible: " + productoActualizado.getStock());
+        
         if (cantidad <= 0 || cantidad > producto.getStock()) {
             JOptionPane.showMessageDialog(this, "Cantidad inválida o insuficiente stock.");
             return;
         }
-
         
         CarritoDAO carritoDAO = new CarritoDAO();
         int idUsuario = Usuario.getUsuarioActual().getId();
         int idCarrito = carritoDAO.crearCarrito(idUsuario);
-
+        
         if (idCarrito == -1) {
             JOptionPane.showMessageDialog(this, "No se pudo crear o acceder al carrito del usuario.");
             return;
         }
-
+        
         boolean agregado = carritoDAO.agregarProducto(idCarrito, productoActualizado.getId(), cantidad);
 
+        // Validación extra de cantidad
+        System.out.println("Cantidad seleccionada: " + cantidad + " | Stock disponible: " + productoActualizado.getStock());
+        
         if (agregado) {
-            JOptionPane.showMessageDialog(this, "Producto añadido al carrito exitosamente.");
+            u.generarMensajeGenerico(this, Utilidades.CARRITO_AGREGANDO_PRODUCTO,
+            "¡Producto agregado exitosamente!",
+            "Felicidades, el producto llamado: " + productoActualizado.getNombre() +" se agregó con éxito",
+            "Error Inesperado",JOptionPane.ERROR_MESSAGE, 150, 150);
+            
 
-            // 4. Refrescar stock mostrado
             ProductoDAO productoDAO = new ProductoDAO();
             Producto actualizado = productoDAO.obtenerPorId(producto.getId());
             
@@ -222,22 +230,32 @@ public class P_ProductoItem extends javax.swing.JPanel {
                 producto.setStock(actualizado.getStock());
                 lblStock.setText(Integer.toString(actualizado.getStock()));
 
-                // 5. Actualizar el Spinner también
+                // Actualizar el Spinner también
                 SpinnerNumberModel model = new SpinnerNumberModel(1, 1, actualizado.getStock(), 1);
                 jSCantidad.setModel(model);
 
-                // 6. Deshabilitar botón si ya no hay stock
+                // Deshabilitar botón si ya no hay stock
                 if (actualizado.getStock() == 0) {
                     btnAgregarCarrito.setEnabled(false);
                     btnAgregarCarrito.setText("Sin Stock");
                     btnAgregarCarrito.setBackground(new Color(244, 67, 54)); // Rojo suave
                 }
             }
+            
+            
+            P_AplicacionCliente app = (P_AplicacionCliente) SwingUtilities.getAncestorOfClass(P_AplicacionCliente.class, this);
+            if (app != null) {
+                app.getCarritoVentasPanel().recargarCarrito();
+            }
+            
         } else {
             JOptionPane.showMessageDialog(this, "No se pudo añadir el producto al carrito.");
         }
+        
+        
     }//GEN-LAST:event_btnAgregarCarritoActionPerformed
 
+    
     public void setDatosProducto(Producto p) {
         if (p == null) return;
 

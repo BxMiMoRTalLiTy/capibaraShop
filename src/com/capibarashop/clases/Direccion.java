@@ -16,10 +16,12 @@ public class Direccion {
     private String estado;
     private String codigoPostal;
     private String pais;
-    private String tipo; // envio o factura
+    private TipoDireccion tipo;
     private boolean esPrincipal;
 
-    public Direccion(int id, int idUsuario, String calle, String ciudad, String estado, String codigoPostal, String pais, String tipo, boolean esPrincipal) {
+    public Direccion(){}
+    
+    public Direccion(int id, int idUsuario, String calle, String ciudad, String estado, String codigoPostal, String pais, TipoDireccion tipo, boolean esPrincipal) {
         this.id = id;
         this.idUsuario = idUsuario;
         this.calle = calle;
@@ -31,7 +33,7 @@ public class Direccion {
         this.esPrincipal = esPrincipal;
     }
 
-    public Direccion(int idUsuario, String calle, String ciudad, String estado, String codigoPostal, String pais, String tipo, boolean esPrincipal) {
+    public Direccion(int idUsuario, String calle, String ciudad, String estado, String codigoPostal, String pais, TipoDireccion tipo, boolean esPrincipal) {
         this(-1, idUsuario, calle, ciudad, estado, codigoPostal, pais, tipo, esPrincipal);
     }
 
@@ -64,7 +66,7 @@ public class Direccion {
         return pais;
     }
 
-    public String getTipo() {
+    public TipoDireccion getTipo() {
         return tipo;
     }
     

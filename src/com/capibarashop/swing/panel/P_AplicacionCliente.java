@@ -4,7 +4,6 @@
  */
 package com.capibarashop.swing.panel;
 
-import com.capibarashop.clases.Usuario;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Cursor;
@@ -17,7 +16,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-import javax.swing.Timer;
 
 /**
  *
@@ -25,6 +23,8 @@ import javax.swing.Timer;
  */
 public class P_AplicacionCliente extends javax.swing.JPanel {
 
+    private P_CarritoVentas carritoVentasPanel;
+    
     
     private CardLayout cardLayout;
     /**
@@ -33,6 +33,10 @@ public class P_AplicacionCliente extends javax.swing.JPanel {
     public P_AplicacionCliente() throws SQLException {
         initComponents();
         iniciarVistas();
+    }
+    
+    public P_CarritoVentas getCarritoVentasPanel(){
+        return carritoVentasPanel;
     }
     
     private void iniciarVistas() {
@@ -46,14 +50,18 @@ public class P_AplicacionCliente extends javax.swing.JPanel {
             jPPantalla.add(new JLabel("Error al cargar inicio"), "inicio");
         }
         
-        jPPantalla.add(new P_CarritoVentas(), "carrito");
+        carritoVentasPanel = new P_CarritoVentas();
+        
+        jPPantalla.add(carritoVentasPanel, "carrito");
         jPPantalla.add(new P_MiCuenta(), "micuenta");
 
         cardLayout.show(jPPantalla, "inicio");
         jPPerfilOpciones.setVisible(false);
     }
     
-    
+//    public void recargarCarrito() {
+//        cargarProductosDelCarrito(); // Método que ya tienes
+//    }
     
     /**
      * This method is called from within the constructor to initialize the form.
@@ -245,7 +253,12 @@ public class P_AplicacionCliente extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jLCarritoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLCarritoMouseClicked
+        if(carritoVentasPanel != null){
+            carritoVentasPanel.recargarCarrito();
+        }
+        
         cardLayout.show(jPPantalla, "carrito");
+        
     }//GEN-LAST:event_jLCarritoMouseClicked
 
     private void jLCarritoMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLCarritoMouseEntered
@@ -328,6 +341,10 @@ public class P_AplicacionCliente extends javax.swing.JPanel {
         if (!jPPerfilOpciones.contains(mouse)) {
             jPPerfilOpciones.setVisible(false);
         }
+        
+        jLPerfil.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        jLPerfil.setForeground(Color.BLACK);
+        
     }//GEN-LAST:event_jPPerfilOpcionesMouseExited
 
     private void jLMiCuentaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLMiCuentaMouseClicked

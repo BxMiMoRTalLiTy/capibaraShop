@@ -5,12 +5,16 @@
 package com.capibarashop.dialogs.direccion;
 
 import com.capibarashop.clases.Direccion;
+import com.capibarashop.clases.TipoDireccion;
 import com.capibarashop.clases.dao.DireccionDAO;
 import com.capibarashop.clases.Usuario;
 import com.capibarashop.clases.Utilidades;
+import com.capibarashop.clases.dao.TipoDireccionDAO;
 import java.awt.Image;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -32,6 +36,7 @@ public class DialogAgregarDireccion extends javax.swing.JDialog {
     public DialogAgregarDireccion(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        cargarTiposDireccion();
         
         ImageIcon icon = new ImageIcon(getClass().getResource(Utilidades.AGREGAR_DIRECCION));
         Image img = icon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH); // ← Ajusta tamaño aquí
@@ -137,7 +142,11 @@ public class DialogAgregarDireccion extends javax.swing.JDialog {
         jPanel1.add(jTFPais, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 240, 160, -1));
 
         jCBTipo.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
-        jCBTipo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Selecciona un tipo", "Envio", "Factura" }));
+        jCBTipo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jCBTipoActionPerformed(evt);
+            }
+        });
         jPanel1.add(jCBTipo, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 280, 170, 30));
         jPanel1.add(jLCapibara, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 50, 50));
 
@@ -166,27 +175,31 @@ public class DialogAgregarDireccion extends javax.swing.JDialog {
         this.dispose();
     }//GEN-LAST:event_jBCancelarActionPerformed
 
+    private void jCBTipoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCBTipoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jCBTipoActionPerformed
+
     private void guardarDireccion() {
         String calle = jTFCalle.getText().trim();
         String ciudad = jTFCiudad.getText().trim();
         String estado = jTFEstado.getText().trim();
         String cp = jTFCodigoP.getText().trim();
         String pais = jTFPais.getText().trim();
-        String tipo = (String) jCBTipo.getSelectedItem();
+        TipoDireccion tipo = (TipoDireccion) jCBTipo.getSelectedItem(); 
 
-        if (calle.isEmpty() || ciudad.isEmpty() || estado.isEmpty() || cp.isEmpty() || pais.isEmpty() || tipo.equals("Selecciona un tipo")) {
-            u.generarMensajeGenerico(this, Utilidades.FALTAN_CAMPOS, "Hay campos vacíos", "Por favor, rellena todos los campos", "Campos vacíos", 
-                    JOptionPane.ERROR_MESSAGE, 150, 150);
+        if (calle.isEmpty() || ciudad.isEmpty() || estado.isEmpty() || cp.isEmpty() || pais.isEmpty() || tipo == null || tipo.getId() == 0) {
+            u.generarMensajeGenerico(this, Utilidades.FALTAN_CAMPOS,
+                "Hay campos vacíos",
+                "Por favor, rellena todos los campos",
+                "Campos vacíos", JOptionPane.ERROR_MESSAGE, 150, 150);
             return;
         }
-        
+
         int idUsuario = Usuario.getUsuarioActual().getId();
         DireccionDAO dao = new DireccionDAO();
 
-        // Desmarcar todas como principal
-        boolean desmarcadas = dao.marcarTodasNoPrincipal(idUsuario);
+        dao.marcarTodasNoPrincipal(idUsuario);
 
-        // Crear nueva como principal
         Direccion direccion = new Direccion(idUsuario, calle, ciudad, estado, cp, pais, tipo, true);
 
         if (dao.insertar(direccion)) {
@@ -199,8 +212,10 @@ public class DialogAgregarDireccion extends javax.swing.JDialog {
                 onDireccionGuardada.run();
             }
         } else {
-            u.generarMensajeGenerico(this, Utilidades.ERROR_FALLO, "Error al guardar", "No se pudo guardar la dirección", "Error", 
-                    JOptionPane.ERROR_MESSAGE, 150, 150);
+            u.generarMensajeGenerico(this, Utilidades.ERROR_FALLO,
+                "Error al guardar",
+                "No se pudo guardar la dirección",
+                "Error", JOptionPane.ERROR_MESSAGE, 150, 150);
         }
     }
     
@@ -208,13 +223,23 @@ public class DialogAgregarDireccion extends javax.swing.JDialog {
         this.onDireccionGuardada = onDireccionGuardada;
     }
     
-    
+    private void cargarTiposDireccion() {
+        TipoDireccionDAO dao = new TipoDireccionDAO();
+        List<TipoDireccion> tipos = dao.obtenerTodos();
+
+        jCBTipo.removeAllItems();
+        jCBTipo.addItem(new TipoDireccion(0, "Selecciona un tipo..."));
+        
+        for (TipoDireccion tipo : tipos) {
+            jCBTipo.addItem(tipo);
+        }
+    }
     
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jBCancelar;
     private javax.swing.JButton jBGuardar;
-    private javax.swing.JComboBox<String> jCBTipo;
+    private javax.swing.JComboBox<TipoDireccion> jCBTipo;
     private javax.swing.JLabel jLCalle;
     private javax.swing.JLabel jLCapibara;
     private javax.swing.JLabel jLCapibaraPaquete;

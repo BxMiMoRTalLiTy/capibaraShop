@@ -231,7 +231,7 @@
             <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="jSPrecioFocusLost"/>
           </Events>
           <AuxValues>
-            <AuxValue name="JavaCodeGenerator_AddingCodePost" type="java.lang.String" value="jSPrecio.setModel(new SpinnerNumberModel(productoOriginal.getPrecio(), 0.00, 999999.99, 0.01));&#xa;JSpinner.NumberEditor editor = new JSpinner.NumberEditor(jSPrecio, &quot;$#,##0.00&quot;);&#xa;jSPrecio.setEditor(editor);"/>
+            <AuxValue name="JavaCodeGenerator_AddingCodePost" type="java.lang.String" value="jSPrecio.setModel(new SpinnerNumberModel(productoOriginal.getPrecio().doubleValue(), 0.00, 999999.99, 0.01));&#xa;JSpinner.NumberEditor editor = new JSpinner.NumberEditor(jSPrecio, &quot;$#,##0.00&quot;);&#xa;jSPrecio.setEditor(editor);"/>
           </AuxValues>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">

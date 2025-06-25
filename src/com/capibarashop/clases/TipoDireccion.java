@@ -8,12 +8,10 @@ package com.capibarashop.clases;
  *
  * @author Angel Aimar
  */
-public class Rol extends EntidadBase{
-    
-    public Rol(){
-     }
-    
-    public Rol(int id, String nombre) {
+public class TipoDireccion extends EntidadBase{
+    public TipoDireccion() {}
+
+    public TipoDireccion(int id, String nombre) {
         super(id, nombre);
     }
 }

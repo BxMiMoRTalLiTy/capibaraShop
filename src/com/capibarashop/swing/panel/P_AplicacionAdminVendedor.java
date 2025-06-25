@@ -28,9 +28,12 @@ import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Map;
+import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -44,7 +47,7 @@ public class P_AplicacionAdminVendedor extends javax.swing.JPanel {
      */
     public P_AplicacionAdminVendedor() throws SQLException{
         initComponents();
-        ImageIcon icon = new ImageIcon(getClass().getResource("/com/capibarashop/resources/capibara.png"));
+        ImageIcon icon = new ImageIcon(getClass().getResource(Utilidades.LOGO_CAPIBARA));
         Image img = icon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH); // ← Ajusta tamaño aquí
         jCapibaraLogo.setIcon(new ImageIcon(img));
         
@@ -52,9 +55,17 @@ public class P_AplicacionAdminVendedor extends javax.swing.JPanel {
                 
         jPanel1.setPreferredSize(new Dimension(1100, 800));
         
-        llenarComboBoxCategorias();
-        cargarCategorias();
-        
+        CategoriaDAO dao = new CategoriaDAO();
+        List<Categoria> categorias = dao.listarCategorias();
+        Categoria categoriaInicial = new Categoria(0, "Todas las Categorías");
+        Utilidades.cargarJComboBox(
+            jCBFiltroCategorias,                  
+            categorias,                    
+            categoriaInicial,              
+            Comparator.comparing(Categoria::getId), 
+            "Todas las Categorías"        
+        );
+
         cargarProductosDesdeInicio();
         if (!Usuario.getUsuarioActual().getRol().toString().equalsIgnoreCase("Administrador")) {
             jBAgregarCategoria.setVisible(false);
@@ -211,6 +222,12 @@ public class P_AplicacionAdminVendedor extends javax.swing.JPanel {
         jPanel1.setBackground(new java.awt.Color(230, 230, 250));
         jPanel1.setForeground(new java.awt.Color(204, 90, 234));
 
+        jTPGeneral.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTPGeneralMouseClicked(evt);
+            }
+        });
+
         jPMostrarProductos.setMaximumSize(new java.awt.Dimension(890, 600));
         jPMostrarProductos.setPreferredSize(new java.awt.Dimension(890, 600));
 
@@ -294,7 +311,7 @@ public class P_AplicacionAdminVendedor extends javax.swing.JPanel {
         jScrollPaneTablaProductos.setBorder(javax.swing.BorderFactory.createEmptyBorder());
         jScrollPaneTablaProductos.setViewportBorder(null);
         jScrollPaneTablaProductos.setBorder(javax.swing.BorderFactory.createEmptyBorder());
-        jScrollPaneTablaProductos.getVerticalScrollBar().setUnitIncrement(20);
+        jScrollPaneTablaProductos.getVerticalScrollBar().setUnitIncrement(28);
 
         jTPGeneral.addTab("Mis Productos", jPMostrarProductos);
 
@@ -398,7 +415,7 @@ public class P_AplicacionAdminVendedor extends javax.swing.JPanel {
         jScrollPaneTablaCategorias.setBorder(javax.swing.BorderFactory.createEmptyBorder());
         jScrollPaneTablaCategorias.setViewportBorder(null);
         jScrollPaneTablaCategorias.setBorder(javax.swing.BorderFactory.createEmptyBorder());
-        jScrollPaneTablaCategorias.getVerticalScrollBar().setUnitIncrement(20);
+        jScrollPaneTablaCategorias.getVerticalScrollBar().setUnitIncrement(28);
 
         jTPGeneral.addTab("Categorias", jPMostrarCategorias);
 
@@ -494,6 +511,8 @@ public class P_AplicacionAdminVendedor extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_jBAgregarActionPerformed
 
+    
+    
     private void jBEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBEliminarActionPerformed
         // TODO add your handling code here:
         
@@ -514,7 +533,16 @@ public class P_AplicacionAdminVendedor extends javax.swing.JPanel {
         dialog.setVisible(true);
         
         try {
-            llenarComboBoxCategorias();
+            CategoriaDAO dao = new CategoriaDAO();
+            List<Categoria> categorias = dao.listarCategorias();
+            Categoria categoriaInicial = new Categoria(0, "Todas las Categorías");
+            Utilidades.cargarJComboBox(
+                jCBFiltroCategorias,                  
+                categorias,                    
+                categoriaInicial,              
+                Comparator.comparing(Categoria::getId), 
+                "Todas las Categorías"        
+            );
             cargarCategorias();
         } catch (SQLException ex) {
             System.getLogger(P_AplicacionAdminVendedor.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
@@ -527,7 +555,16 @@ public class P_AplicacionAdminVendedor extends javax.swing.JPanel {
         dialog.setVisible(true);
         
         try {
-            llenarComboBoxCategorias();
+            CategoriaDAO dao = new CategoriaDAO();
+            List<Categoria> categorias = dao.listarCategorias();
+            Categoria categoriaInicial = new Categoria(0, "Todas las Categorías");
+            Utilidades.cargarJComboBox(
+                jCBFiltroCategorias,                  
+                categorias,                    
+                categoriaInicial,              
+                Comparator.comparing(Categoria::getId), 
+                "Todas las Categorías"        
+            );
             cargarCategorias();
         } catch (SQLException ex) {
             System.getLogger(P_AplicacionAdminVendedor.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
@@ -555,8 +592,18 @@ public class P_AplicacionAdminVendedor extends javax.swing.JPanel {
     }//GEN-LAST:event_jBBuscarCategoriaActionPerformed
 
     private void jCBFiltroCategoriasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCBFiltroCategoriasActionPerformed
-        // TODO add your handling code here:
+       
     }//GEN-LAST:event_jCBFiltroCategoriasActionPerformed
+
+    private void jTPGeneralMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTPGeneralMouseClicked
+        try {
+            // TODO add your handling code here:
+            cargarProductosDesdeInicio();
+            cargarCategorias();
+        } catch (SQLException ex) {
+            System.getLogger(P_AplicacionAdminVendedor.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+        }
+    }//GEN-LAST:event_jTPGeneralMouseClicked
     
     private void filtrarProductosPorCategoria(Categoria categoria) throws SQLException {
         ProductoDAO dao = new ProductoDAO();
@@ -631,7 +678,7 @@ public class P_AplicacionAdminVendedor extends javax.swing.JPanel {
                 sb.append("<td>").append(p.getStock()).append("</td>");
                 sb.append("<td>").append(p.getDescripcion()).append("</td>");
 
-                String imgUrl = guardarImagenTemporal(p.getImagen(), p.getId());
+                String imgUrl = u.guardarImagenTemporal(p.getImagen(), p.getId());
                 if (imgUrl != null) {
                     sb.append("<td><img src='").append(imgUrl).append("' width='80' height='80'/></td>");
                 } else {
@@ -733,7 +780,7 @@ public class P_AplicacionAdminVendedor extends javax.swing.JPanel {
             String nombreCategoria = (p.getCategoria() != null) ? p.getCategoria().toString() : "Sin categoría";
             sb.append("<td>").append(nombreCategoria).append("</td>");
             
-            String imagenURL = guardarImagenTemporal(p.getImagen(), p.getId());
+            String imagenURL = u.guardarImagenTemporal(p.getImagen(), p.getId());
             if (imagenURL != null) {
                 sb.append("<td><img src='").append(imagenURL).append("' width='80' height='80'/></td>");
             } else {
@@ -834,7 +881,7 @@ public class P_AplicacionAdminVendedor extends javax.swing.JPanel {
             String nombreCategoria = (p.getCategoria() != null) ? p.getCategoria().toString() : "Sin categoría";
             sb.append("<td>").append(nombreCategoria).append("</td>");
             
-            String imagenURL = guardarImagenTemporal(p.getImagen(), p.getId());
+            String imagenURL = u.guardarImagenTemporal(p.getImagen(), p.getId());
             if (imagenURL != null) {
                 sb.append("<td><img src='").append(imagenURL).append("' width='80' height='80'/></td>");
             } else {
@@ -904,42 +951,7 @@ public class P_AplicacionAdminVendedor extends javax.swing.JPanel {
         jTPaneCategorias.setText(sb.toString());
         jTPaneCategorias.setCaretPosition(0);
     }
-    
-    private void llenarComboBoxCategorias() throws SQLException {
-        
-        jCBFiltroCategorias.removeAllItems();
-        jCBFiltroCategorias.addItem(new Categoria(0, "Todas las Categorías"));
-        
-        CategoriaDAO.cargarCategorias(jCBFiltroCategorias);
-    }
    
-    private String guardarImagenTemporal(byte[] datosImagen, int idProducto) {
-        try {
-            // Si no hay imagen proporcionada, carga la imagen por defecto desde recursos
-            if (datosImagen == null) {
-                InputStream is = getClass().getResourceAsStream(Utilidades.DEFAULT_PRODUCTO);
-                if (is != null) {
-                    datosImagen = is.readAllBytes();
-                } else {
-                    System.err.println("Imagen por defecto no encontrada.");
-                    return null;
-                }
-            }
-
-            // Crear directorio si no existe
-            File tempDir = new File("temp/imagenes");
-            if (!tempDir.exists()) tempDir.mkdirs();
-            
-            // Guardar archivo temporalmente
-            File imagenFile = new File(tempDir, "producto_" + idProducto + ".png");
-            Files.write(imagenFile.toPath(), datosImagen);
-            return imagenFile.toURI().toURL().toString(); // Ruta accesible por HTML
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-    
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jBActualizar;

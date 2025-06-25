@@ -9,6 +9,8 @@ import com.capibarashop.clases.Categoria;
 import com.capibarashop.clases.dao.CategoriaDAO;
 import com.capibarashop.clases.Utilidades;
 import java.awt.Image;
+import java.util.Comparator;
+import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
@@ -34,7 +36,16 @@ public class DialogActualizarCategoriaBuscar extends javax.swing.JDialog {
         Image img = icon.getImage().getScaledInstance(120, 120, Image.SCALE_SMOOTH);
         jLCapibara.setIcon(new ImageIcon(img));
         
-        CategoriaDAO.cargarCategorias(jCBCategoria);
+        CategoriaDAO dao = new CategoriaDAO();
+        List<Categoria> categorias = dao.listarCategorias();
+        Categoria categoriaInicial = new Categoria(0, "Selecciona 1 para actualizar");
+            Utilidades.cargarJComboBox(
+            jCBCategoria,                  
+            categorias,                    
+            categoriaInicial,              
+            Comparator.comparing(Categoria::getId), 
+            "Selecciona 1 para actualizar"        
+            );
     }
 
     /**
@@ -103,14 +114,11 @@ public class DialogActualizarCategoriaBuscar extends javax.swing.JDialog {
         
         Categoria categoria = (Categoria) jCBCategoria.getSelectedItem();
         
-        CategoriaDAO dao = new CategoriaDAO();
-        
-        
-        if (categoria == null) {
+        if (categoria == null || categoria.getId() == 0) {
             u.generarMensajeGenerico(this, Utilidades.ERROR_FALLO,
                     "¡La categoria: " + categoria.toString() + " no existe o no se encontró!",
-                    "No se encontró ningun producto con ese ID, vuelve a intentarlo o verifica bien los IDs de tus productos existentes",
-                    "Buscar Producto", JOptionPane.INFORMATION_MESSAGE, 150, 150);
+                    "No existe esa categoria, Selecciona una categoria valida por favor",
+                    "Seleccionar Categoria", JOptionPane.INFORMATION_MESSAGE, 150, 150);
             return;
         }
         

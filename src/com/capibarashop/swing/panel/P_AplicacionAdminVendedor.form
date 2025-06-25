@@ -129,6 +129,9 @@
       </Layout>
       <SubComponents>
         <Container class="javax.swing.JTabbedPane" name="jTPGeneral">
+          <Events>
+            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="jTPGeneralMouseClicked"/>
+          </Events>
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
           <SubComponents>
@@ -173,7 +176,7 @@
                     <Property name="horizontalScrollBarPolicy" type="int" value="31"/>
                   </Properties>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_AddingCodePost" type="java.lang.String" value="jScrollPaneTablaProductos.setVerticalScrollBar(new ScrollBar());&#xa;jScrollPaneTablaProductos.setBorder(javax.swing.BorderFactory.createEmptyBorder());&#xa;jScrollPaneTablaProductos.setViewportBorder(null);&#xa;jScrollPaneTablaProductos.setBorder(javax.swing.BorderFactory.createEmptyBorder());&#xa;jScrollPaneTablaProductos.getVerticalScrollBar().setUnitIncrement(20);"/>
+                    <AuxValue name="JavaCodeGenerator_AddingCodePost" type="java.lang.String" value="jScrollPaneTablaProductos.setVerticalScrollBar(new ScrollBar());&#xa;jScrollPaneTablaProductos.setBorder(javax.swing.BorderFactory.createEmptyBorder());&#xa;jScrollPaneTablaProductos.setViewportBorder(null);&#xa;jScrollPaneTablaProductos.setBorder(javax.swing.BorderFactory.createEmptyBorder());&#xa;jScrollPaneTablaProductos.getVerticalScrollBar().setUnitIncrement(28);"/>
                   </AuxValues>
 
                   <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
@@ -313,7 +316,7 @@
                     <Property name="horizontalScrollBarPolicy" type="int" value="31"/>
                   </Properties>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_AddingCodePost" type="java.lang.String" value="jScrollPaneTablaCategorias.setVerticalScrollBar(new ScrollBar());&#xa;jScrollPaneTablaCategorias.setBorder(javax.swing.BorderFactory.createEmptyBorder());&#xa;jScrollPaneTablaCategorias.setViewportBorder(null);&#xa;jScrollPaneTablaCategorias.setBorder(javax.swing.BorderFactory.createEmptyBorder());&#xa;jScrollPaneTablaCategorias.getVerticalScrollBar().setUnitIncrement(20);"/>
+                    <AuxValue name="JavaCodeGenerator_AddingCodePost" type="java.lang.String" value="jScrollPaneTablaCategorias.setVerticalScrollBar(new ScrollBar());&#xa;jScrollPaneTablaCategorias.setBorder(javax.swing.BorderFactory.createEmptyBorder());&#xa;jScrollPaneTablaCategorias.setViewportBorder(null);&#xa;jScrollPaneTablaCategorias.setBorder(javax.swing.BorderFactory.createEmptyBorder());&#xa;jScrollPaneTablaCategorias.getVerticalScrollBar().setUnitIncrement(28);"/>
                   </AuxValues>
 
                   <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>

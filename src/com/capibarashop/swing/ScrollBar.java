@@ -6,8 +6,6 @@ package com.capibarashop.swing;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.ScrollPane;
-import javax.swing.BorderFactory;
 import javax.swing.JScrollBar;
 
 /**

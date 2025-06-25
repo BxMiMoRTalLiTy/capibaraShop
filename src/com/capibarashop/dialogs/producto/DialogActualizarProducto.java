@@ -12,6 +12,7 @@ import com.capibarashop.clases.Utilidades;
 import com.capibarashop.swing.ScrollBar;
 import java.awt.Image;
 import java.io.IOException;
+import java.math.BigDecimal;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.SpinnerNumberModel;
@@ -20,6 +21,8 @@ import javax.swing.JFileChooser;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.nio.file.Files;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  *
@@ -49,7 +52,18 @@ public class DialogActualizarProducto extends javax.swing.JDialog {
         Image img = icon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
         jLCapibara.setIcon(new ImageIcon(img));
 
-        CategoriaDAO.cargarCategorias(jCBCategoria);
+        //Cargar el JCombox
+        CategoriaDAO dao = new CategoriaDAO();
+        List<Categoria> categorias = dao.listarCategorias();
+        Categoria categoriaInicial = new Categoria(0, "Selecciona una categoría...");
+            Utilidades.cargarJComboBox(
+            jCBCategoria,                  
+            categorias,                    
+            categoriaInicial,              
+            Comparator.comparing(Categoria::getId), 
+            "Selecciona una categoría..."        
+            );
+        
         cargarDatosProducto(); // Luego insertar datos
     }
 
@@ -162,7 +176,7 @@ public class DialogActualizarProducto extends javax.swing.JDialog {
             }
         });
         jPanel1.add(jSPrecio, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 110, 140, -1));
-        jSPrecio.setModel(new SpinnerNumberModel(productoOriginal.getPrecio(), 0.00, 999999.99, 0.01));
+        jSPrecio.setModel(new SpinnerNumberModel(productoOriginal.getPrecio().doubleValue(), 0.00, 999999.99, 0.01));
         JSpinner.NumberEditor editor = new JSpinner.NumberEditor(jSPrecio, "$#,##0.00");
         jSPrecio.setEditor(editor);
 
@@ -214,7 +228,7 @@ public class DialogActualizarProducto extends javax.swing.JDialog {
     
     private void cargarDatosProducto() {
         jTFNombre.setText(productoOriginal.getNombre());
-        jSPrecio.setValue(productoOriginal.getPrecio());
+        jSPrecio.setValue(productoOriginal.getPrecio().doubleValue());
         jSStock.setValue(productoOriginal.getStock());
         jTADescripcion.setText(productoOriginal.getDescripcion());
         imagenSeleccionada = productoOriginal.getImagen();
@@ -259,19 +273,19 @@ public class DialogActualizarProducto extends javax.swing.JDialog {
 
     private void guardarCambios() {
         String nombre = jTFNombre.getText();
-        Double precio = (Double) jSPrecio.getValue();
+        BigDecimal precio = BigDecimal.valueOf((Double) jSPrecio.getValue());
         int stock = (Integer) jSStock.getValue();
         String descripcion = jTADescripcion.getText();
         Categoria categoria = (Categoria) jCBCategoria.getSelectedItem();
 
-        if (nombre.isEmpty() || descripcion.isEmpty() || precio <= 0.00 || categoria == null || categoria.getId() == 0) {
+        if (nombre.isEmpty() || descripcion.isEmpty() || precio.compareTo(BigDecimal.ZERO) <= 0.00 || categoria == null || categoria.getId() == 0) {
             StringBuilder errores = new StringBuilder("Corrige los siguientes campos:\n");
 
             if (nombre.isEmpty()) {
                 errores.append("- El nombre es obligatorio.\n");
             }
             
-            if (precio <= 0.00) {
+            if (precio.compareTo(BigDecimal.ZERO) <= 0.00) {
                 errores.append("- El precio debe ser mayor a $0.00.\n");
             }
             
@@ -315,7 +329,6 @@ public class DialogActualizarProducto extends javax.swing.JDialog {
     private void jBGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBGuardarActionPerformed
         // TODO add your handling code here:
         guardarCambios();
-        this.dispose();
     }//GEN-LAST:event_jBGuardarActionPerformed
 
     

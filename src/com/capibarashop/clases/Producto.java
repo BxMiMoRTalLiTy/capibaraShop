@@ -4,6 +4,8 @@
  */
 package com.capibarashop.clases;
 
+import java.math.BigDecimal;
+
 /**
  *
  * @author Angel Aimar
@@ -11,7 +13,7 @@ package com.capibarashop.clases;
 public class Producto {
     private int id;
     private String nombre;
-    private double precio;
+    private BigDecimal precio;
     private String descripcion;
     private int stock;
     private Categoria categoria;
@@ -22,7 +24,7 @@ public class Producto {
     
     }
     
-    public Producto(int id, String nombre, double precio, String descripcion, int stock, Categoria categoria, Usuario usuario){
+    public Producto(int id, String nombre, BigDecimal precio, String descripcion, int stock, Categoria categoria, Usuario usuario){
         this.id = id;
         this.nombre = nombre;
         this.precio = precio;
@@ -34,7 +36,7 @@ public class Producto {
     }
     
     //Producto sin imagen = null
-    public Producto(String nombre, double precio, String descripcion, int stock, Categoria categoria, Usuario usuario){
+    public Producto(String nombre, BigDecimal precio, String descripcion, int stock, Categoria categoria, Usuario usuario){
         this.nombre = nombre;
         this.precio = precio;
         this.descripcion = descripcion;
@@ -45,7 +47,7 @@ public class Producto {
     }
     
     //Producto con imagen
-    public Producto(String nombre, double precio, String descripcion, int stock, byte[] imagen, Categoria categoria, Usuario usuario){
+    public Producto(String nombre, BigDecimal precio, String descripcion, int stock, byte[] imagen, Categoria categoria, Usuario usuario){
         this.nombre = nombre;
         this.precio = precio;
         this.descripcion = descripcion;
@@ -72,7 +74,7 @@ public class Producto {
     /**
      * @return the precio
      */
-    public double getPrecio() {
+    public BigDecimal getPrecio() {
         return precio;
     }
 
@@ -122,7 +124,7 @@ public class Producto {
     /**
      * @param precio the precio to set
      */
-    public void setPrecio(double precio) {
+    public void setPrecio(BigDecimal precio) {
         this.precio = precio;
     }
 

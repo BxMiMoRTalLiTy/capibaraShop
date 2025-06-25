@@ -8,32 +8,12 @@ package com.capibarashop.clases;
  *
  * @author Angel Aimar
  */
-public class Categoria {
-    private int id;
-    private String nombre;
+public class Categoria extends EntidadBase{
 
     public Categoria(){}
     
     public Categoria(int id, String nombre) {
-        this.id = id;
-        this.nombre = nombre;
-    }
-    
-    public int getId() { return id; }
-    
-    public String getNombre() { return nombre; }
-
-    @Override
-    public String toString() {
-        return nombre; 
-    }
-    
-    public void setId(int id){
-        this.id = id;
-    }
-    
-    public void setNombre(String nombre){
-        this.nombre = nombre;
+        super(id, nombre);
     }
     
     @Override
@@ -41,12 +21,12 @@ public class Categoria {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         Categoria other = (Categoria) obj;
-        return this.id == other.id;
+        return this.getId() == other.getId();
     }
 
     @Override
     public int hashCode() {
-        return Integer.hashCode(id);
+        return Integer.hashCode(getId());
     }
     
 }

@@ -8,9 +8,12 @@ import com.capibarashop.clases.Producto;
 import com.capibarashop.clases.dao.ProductoDAO;
 import com.capibarashop.clases.Usuario;
 import com.capibarashop.clases.Utilidades;
+import java.awt.Dimension;
 import java.awt.Image;
 import javax.swing.ImageIcon;
+import javax.swing.JEditorPane;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
 import javax.swing.SpinnerNumberModel;
 
 /**
@@ -105,14 +108,12 @@ public class DialogEliminarProducto extends javax.swing.JDialog {
         // TODO add your handling code here:
         int id = (Integer) jSIdProducto.getValue();
         
-        Producto p = null;
+        Producto p;
         
         ProductoDAO dao = new ProductoDAO();
-        dao.buscarProductoIDVendedores(id);
+        p = dao.buscarProductoIDVendedores(id);
         
         if (p == null) {
-            
-            
             u.generarMensajeGenerico(this, Utilidades.PRODUCTO_NO_ENCONTRADO,
                     "¡El producto de ID: " + id + " no existe o no se encontró!",
                     "No se encontró ningun producto con ese ID, vuelve a intentarlo o verifica bien los IDs de tus productos existentes",
@@ -120,35 +121,89 @@ public class DialogEliminarProducto extends javax.swing.JDialog {
             return;
         }
         
-        String mensaje = "<html>"
-        + "<h3>¿Deseas eliminar el siguiente producto?</h3>"
-        + "<table cellpadding='4'>"
-        + "<tr><td><b>ID:</b></td><td>" + p.getId() + "</td></tr>"
-        + "<tr><td><b>Nombre:</b></td><td>" + p.getNombre() + "</td></tr>"
-        + "<tr><td><b>Precio:</b></td><td>$" + String.format("%.2f", p.getPrecio()) + "</td></tr>"
-        + "<tr><td><b>Stock:</b></td><td>" + p.getStock() + "</td></tr>"
-        + "<tr><td><b>Descripción:</b></td><td>" + p.getDescripcion() + "</td></tr>"
-        + "</table>"
-        + "</html>";
-        //JOptionPane.showMessageDialog(this, mensaje, "Éxito", JOptionPane.INFORMATION_MESSAGE, icono);
-        int confirmacion = JOptionPane.showConfirmDialog(this, mensaje, "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
-
-        if (confirmacion == JOptionPane.YES_OPTION) {
-            if (dao.eliminarProducto(p.getId())) {
-                u.generarMensajeGenerico(this, Utilidades.ELIMINAR_PRODUCTO,
-                    "¡Producto eliminado exitosamente!",
-                    "El Producto " + p.getNombre() + "Ha sido eliminado exitosamente",
-                    "Eliminación", JOptionPane.INFORMATION_MESSAGE, 120, 120);
-                dispose();
-            } else {
-                u.generarMensajeGenerico(this, "/com/capibarashop/resources/capibaraError.png",
-                    "¡Hubo un error inesperado!",
-                    "No se pudo eliminar el producto",
-                    "Error Inesperado", JOptionPane.ERROR_MESSAGE, 120, 120);
-            }
+        String imagenURL = u.guardarImagenTemporal(p.getImagen(), p.getId());
+        
+        if(imagenURL == null){
+            imagenURL = "";
         }
         
+        String mensaje = String.format("""
+            <html>
+              <head>
+                <style>
+                  body { font-family: Arial, sans-serif; }
+                        h3 { color: #5D3FD3; margin-top: 0; }
+                        table {
+                          width: 100%%;
+                          border-collapse: collapse;
+                          margin-top: 10px;
+                        }
+                        td {
+                          padding: 5px;
+                          border: 1px solid #ccc;
+                          vertical-align: top;
+                        }
+                        td:first-child {
+                          font-weight: bold;
+                          background-color: #f0f0f0;
+                          width: 100px;
+                        }
+                        .desc {
+                          max-height: 100px;
+                          overflow-y: auto;
+                        }
+                </style>
+              </head>
+              <body>
+                <h3>¿Deseas eliminar el siguiente producto?</h3>
+                <table>
+                  <tr><td>ID:</td><td>%d</td></tr>
+                  <tr><td>Nombre:</td><td>%s</td></tr>
+                  <tr><td>Precio:</td><td>$%.2f</td></tr>
+                  <tr><td>Stock:</td><td>%d</td></tr>
+                  <tr><td>Descripción:</td><td class="desc">%s</td></tr>
+                  <tr><td>Imagen:</td><td><img src="%s" width="100" height="100"/></td></tr>
+                </table>
+              </body>
+            </html>
+            """, 
+                p.getId(),
+                p.getNombre(),
+                p.getPrecio().doubleValue(),
+                p.getStock(),
+                p.getDescripcion().replace("\n", "<br>"),
+                imagenURL
+            );
         
+        JEditorPane editorPane = new JEditorPane("text/html", mensaje);
+        editorPane.setEditable(false);
+        editorPane.setCaretPosition(0);
+
+        JScrollPane scrollPane = new JScrollPane(editorPane);
+        scrollPane.setPreferredSize(new Dimension(450, 250));
+        
+        int confirmacion = JOptionPane.showConfirmDialog(this, scrollPane, "Confirmar", JOptionPane.YES_NO_OPTION);
+        
+        if (confirmacion == JOptionPane.YES_OPTION){
+            int confirmacion2 = JOptionPane.showConfirmDialog(this, "Selecciona 'Yes', para continuar con la eliminación", 
+                "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
+            
+            if (confirmacion2 == JOptionPane.YES_OPTION) {
+                if (dao.eliminarProducto(p.getId())) {
+                    u.generarMensajeGenerico(this, Utilidades.ELIMINAR_PRODUCTO,
+                        "¡Producto eliminado exitosamente!",
+                        "El Producto " + p.getNombre() + " Ha sido eliminado exitosamente",
+                        "Eliminación", JOptionPane.INFORMATION_MESSAGE, 120, 120);
+                    this.dispose();
+                } else {
+                    u.generarMensajeGenerico(this, Utilidades.ERROR_FALLO,
+                        "¡Hubo un error inesperado!",
+                        "No se pudo eliminar el producto",
+                        "Error Inesperado", JOptionPane.ERROR_MESSAGE, 120, 120);
+                    this.dispose();
+                }
+            }
+        }
     }//GEN-LAST:event_jBBuscarActionPerformed
 
     private void jBBuscar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBBuscar1ActionPerformed

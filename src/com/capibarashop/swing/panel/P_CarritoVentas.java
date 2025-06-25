@@ -11,14 +11,22 @@ import com.capibarashop.clases.Usuario;
 import com.capibarashop.clases.dao.VentaDAO;
 import com.capibarashop.dialogs.direccion.DialogSeleccionarDireccion;
 import com.capibarashop.clases.Utilidades;
+import com.capibarashop.clases.Carrito;
+import com.capibarashop.clases.MetodoPago;
 import com.capibarashop.clases.dao.CarritoDAO;
+import com.capibarashop.clases.dao.DatosFacturacionDAO;
+import com.capibarashop.clases.DatosFacturacion;
 import com.capibarashop.clases.dao.DetalleCarritoDAO;
 import com.capibarashop.clases.dao.DireccionDAO;
+import com.capibarashop.clases.dao.MetodosPagoDAO;
 import java.awt.Color;
 import java.awt.Component;
 import java.util.List;
 import javax.swing.ImageIcon;
 import java.awt.Image;
+import java.math.BigDecimal;
+import java.util.Comparator;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -32,6 +40,8 @@ import javax.swing.table.DefaultTableModel;
  */
 public class P_CarritoVentas extends javax.swing.JPanel {
     
+    
+    private P_CarritoVentas panelCarrito;
     Utilidades u = new Utilidades();
     private int idCarrito;
     private DefaultTableModel modelo;
@@ -55,8 +65,22 @@ public class P_CarritoVentas extends javax.swing.JPanel {
         prepararTabla();
         idCarrito = obtenerIdCarritoActivo();
         cargarProductosDelCarrito();
+        cargarMetodosDePago();
     }
+    
+    private void cargarMetodosDePago(){
+        List<MetodoPago> metodos = new MetodosPagoDAO().obtenerTodos();
+        MetodoPago metodoInicial = new MetodoPago(0, "Selecciona una opción", "");
 
+        Utilidades.cargarJComboBox(
+            jCBMetodoPago,
+            metodos,
+            metodoInicial,
+            Comparator.comparing(MetodoPago :: getNombre),
+            "Selecciona una opción"
+        );
+    }
+    
     private int obtenerIdCarritoActivo() {
         CarritoDAO dao = new CarritoDAO();
         return dao.obtenerCarritoActivoID(Usuario.getUsuarioActual().getId());
@@ -78,10 +102,12 @@ public class P_CarritoVentas extends javax.swing.JPanel {
         jSPTabla = new javax.swing.JScrollPane();
         jTCarrito = new javax.swing.JTable();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jTable2 = new javax.swing.JTable();
-        jButton1 = new javax.swing.JButton();
+        JTTotal = new javax.swing.JTable();
+        jBPago = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         lblDireccionEntrega = new javax.swing.JLabel();
+        jCBMetodoPago = new javax.swing.JComboBox<>();
+        jLabel3 = new javax.swing.JLabel();
 
         jList1.setModel(new javax.swing.AbstractListModel<String>() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
@@ -112,7 +138,7 @@ public class P_CarritoVentas extends javax.swing.JPanel {
 
         jPanel1.add(jSPTabla, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 40, 670, 530));
 
-        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+        JTTotal.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -120,28 +146,36 @@ public class P_CarritoVentas extends javax.swing.JPanel {
                 "Total"
             }
         ));
-        jScrollPane3.setViewportView(jTable2);
+        jScrollPane3.setViewportView(JTTotal);
 
-        jPanel1.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 370, 170, 140));
+        jPanel1.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 320, 170, 140));
 
-        jButton1.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
-        jButton1.setText("Pagar");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        jBPago.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
+        jBPago.setText("Pagar");
+        jBPago.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                jBPagoActionPerformed(evt);
             }
         });
-        jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 520, 170, -1));
+        jPanel1.add(jBPago, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 470, 170, -1));
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(0, 0, 0));
         jLabel2.setText("Dirección de Entrega:");
-        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 80, -1, -1));
+        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 40, -1, -1));
 
         lblDireccionEntrega.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         lblDireccionEntrega.setForeground(new java.awt.Color(0, 0, 0));
         lblDireccionEntrega.setText("lblDireccionEntrega");
-        jPanel1.add(lblDireccionEntrega, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 110, 170, 230));
+        jPanel1.add(lblDireccionEntrega, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 70, 170, 140));
+
+        jCBMetodoPago.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jPanel1.add(jCBMetodoPago, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 250, 160, -1));
+
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 20)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel3.setText("Metodo de Pago:");
+        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 220, -1, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -162,14 +196,25 @@ public class P_CarritoVentas extends javax.swing.JPanel {
             total += Double.parseDouble(subtotalStr);
         }
 
-        DefaultTableModel modeloTotales = (DefaultTableModel) jTable2.getModel();
+        DefaultTableModel modeloTotales = (DefaultTableModel) JTTotal.getModel();
         modeloTotales.setRowCount(0);
         modeloTotales.addRow(new Object[]{String.format("$%.2f", total)});
     }
     
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void jBPagoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jBPagoActionPerformed
         DireccionDAO dao = new DireccionDAO();
+    
+        MetodoPago metodoSeleccionado = (MetodoPago) jCBMetodoPago.getSelectedItem();
         
+        if (metodoSeleccionado == null || metodoSeleccionado.getId() == 0) {
+            u.generarMensajeGenerico(this, Utilidades.FALTAN_CAMPOS,
+                            "¡Selecciona un metodo de pago!",
+                            "No se ha seleccionado ningun metodo de pago",
+                            "Metodo de pago", JOptionPane.INFORMATION_MESSAGE, 150, 150);
+            return;
+        }
+        
+        // Validar dirección actual o seleccionar una nueva
         if (direccion != null) {
             int respuesta = JOptionPane.showConfirmDialog(this,
                     "¿Deseas usar la dirección actual?\n\n" + direccion.toString().replaceAll("<[^>]*>", ""),
@@ -181,7 +226,6 @@ public class P_CarritoVentas extends javax.swing.JPanel {
                 DialogSeleccionarDireccion dialog = new DialogSeleccionarDireccion(null, true);
                 dialog.setVisible(true);
 
-                // Si seleccionó una nueva dirección en el diálogo
                 Direccion nuevaDireccion = Usuario.getUsuarioActual().getDireccionSeleccionada();
                 if (nuevaDireccion != null) {
                     direccion = nuevaDireccion;
@@ -196,7 +240,6 @@ public class P_CarritoVentas extends javax.swing.JPanel {
                 }
             }
         } else {
-            // No tiene ninguna dirección aún
             DialogSeleccionarDireccion dialog = new DialogSeleccionarDireccion(null, true);
             dialog.setVisible(true);
 
@@ -214,93 +257,121 @@ public class P_CarritoVentas extends javax.swing.JPanel {
             }
         }
 
-        // Realiza la venta
-        VentaDAO ventaDAO = new VentaDAO();
-        boolean exito = ventaDAO.realizarVentaDesdeCarrito(idCarrito, Usuario.getUsuarioActual().getId(), direccion);
+        // Generar resumen visual
+        String total = JTTotal.getValueAt(0, 0).toString();
+        StringBuilder resumen = new StringBuilder("<html><h2>Resumen de Compra</h2><ul>");
+        for (int i = 0; i < modelo.getRowCount(); i++) {
+            String nombre = modelo.getValueAt(i, 1).toString();
+            int cantidad = Integer.parseInt(modelo.getValueAt(i, 2).toString());
+            String precio = modelo.getValueAt(i, 3).toString();
+            resumen.append(String.format("<li>%s x%d - %s</li>", nombre, cantidad, precio));
+        }
+        resumen.append("</ul>");
+        resumen.append("<p><b>Total:</b> ").append(total).append("</p>");
+        resumen.append("<p><b>Dirección:</b> ").append(direccion.toString().replaceAll("<[^>]*>", "")).append("</p>");
+        resumen.append("</html>");
 
+        int confirmacion = JOptionPane.showConfirmDialog(this, new JLabel(resumen.toString()),
+                "¿Confirmas tu compra?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+        if (confirmacion != JOptionPane.YES_OPTION) return;
+
+        // Si requiere factura, obtener datos fiscales
+        DatosFacturacion datosFacturacion = null;
+        if (direccion.getTipo().getNombre().equalsIgnoreCase("factura")) {
+            DatosFacturacionDAO dfDao = new DatosFacturacionDAO();
+            datosFacturacion = dfDao.obtenerPorUsuario(Usuario.getUsuarioActual().getId());
+
+            if (datosFacturacion == null) {
+                u.generarMensajeGenerico(this, Utilidades.FALTAN_CAMPOS,
+                        "Datos fiscales faltantes",
+                        "No se encontraron datos fiscales para el usuario.\nDebes registrar tu RFC y razón social para emitir la factura.",
+                        "Datos Fiscales", JOptionPane.WARNING_MESSAGE, 150, 150);
+                return;
+            }
+        }
+        
+        // Realizar venta con o sin factura
+        VentaDAO ventaDAO = new VentaDAO();
+        boolean exito = ventaDAO.realizarVenta(idCarrito, Usuario.getUsuarioActual().getId(), datosFacturacion, metodoSeleccionado);
+        
         if (exito) {
             new CarritoDAO().cerrarCarrito(idCarrito);
+
+            String mensaje = (datosFacturacion != null) ? "Factura generada" : "Compra realizada";
+            String detalle = (datosFacturacion != null)
+                    ? "Tu compra y factura han sido realizadas exitosamente."
+                    : "Tu compra se ha realizado con éxito.";
+
             u.generarMensajeGenerico(this, Utilidades.EXITO_PROCESO_GENERICO,
-                    "¡Compra Realizada con éxito!",
-                    "Tu compra se ha realizado con éxito",
-                    "Compra Realizada", JOptionPane.INFORMATION_MESSAGE, 150, 150);
+                    mensaje, detalle, mensaje, JOptionPane.INFORMATION_MESSAGE, 150, 150);
+
             modelo.setRowCount(0);
             actualizarTotalGeneral();
-            // Actualizar etiqueta
             lblDireccionEntrega.setText(direccion.toString());
         } else {
             u.generarMensajeGenerico(this, Utilidades.ERROR_FALLO,
                     "¡Hubo un error inesperado!",
-                    "Tu compra no se pudo realizar",
+                    "Tu compra no se pudo realizar.",
                     "Compra no realizada", JOptionPane.ERROR_MESSAGE, 150, 150);
         }
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_jBPagoActionPerformed
 
     private void cargarProductosDelCarrito() {
         modelo.setRowCount(0); // Limpia la tabla
-        double total = 0.0;
-
+        BigDecimal total = BigDecimal.ZERO;
+        
         int idUsuario = Usuario.getUsuarioActual().getId();
         CarritoDAO carritoDAO = new CarritoDAO();
-        int idCarrito = carritoDAO.obtenerCarritoActivo(idUsuario).getId();
+        Carrito carrito = carritoDAO.obtenerCarritoActivo(idUsuario);
         
-        DetalleCarritoDAO dao = new DetalleCarritoDAO();
-        List<DetalleCarrito> lista = dao.obtenerDetalles(idCarrito);
-        
-//        System.out.println("Cargando productos para carrito ID: " + idCarrito);
-//        System.out.println("Total productos encontrados: " + lista.size());
-        
-        for (DetalleCarrito detalle : lista) {
-            Producto producto = detalle.getProducto();
+        if(carrito != null){
             
-            
-            if (producto != null) {
-                int cantidad = detalle.getCantidad();
-                double precio = producto.getPrecio();
-                double subtotal = cantidad * precio;
+            DetalleCarritoDAO dao = new DetalleCarritoDAO();
+            List<DetalleCarrito> lista = dao.obtenerDetalles(idCarrito);
 
-                // Escalar imagen (si existe)
-                ImageIcon icono = null;
-                if (producto.getImagen() != null) {
-                    Image imagenEscalada = new ImageIcon(producto.getImagen()).getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
-                    icono = new ImageIcon(imagenEscalada);
+            for (DetalleCarrito detalle : lista) {
+                Producto producto = detalle.getProducto();
+
+                if (producto != null) {
+                    int cantidad = detalle.getCantidad();
+                    BigDecimal precio = producto.getPrecio();
+                    BigDecimal subtotal = precio.multiply(BigDecimal.valueOf(cantidad));
+
+                    // Escalar imagen (si existe)
+                    ImageIcon icono = null;
+                    if (producto.getImagen() != null) {
+                        Image imagenEscalada = new ImageIcon(producto.getImagen()).getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+                        icono = new ImageIcon(imagenEscalada);
+                    }
+
+                    modelo.addRow(new Object[]{
+                        icono, // Imagen renderizada
+                        producto.getNombre(),
+                        cantidad,
+                        String.format("$%.2f", precio),
+                        String.format("$%.2f", subtotal)
+                    });
+
+                    total = total.add(subtotal);
+                } else {
+                    System.err.println("Producto nulo en DetalleCarrito.");
                 }
-
-//                System.out.println("Agregando a tabla: "
-//                + "nombre=" + producto.getNombre()
-//                + ", cantidad=" + cantidad
-//                + ", precio=" + precio
-//                + ", subtotal=" + subtotal);
-                   
-                
-                
-                modelo.addRow(new Object[]{
-                    icono, // Imagen renderizada
-                    producto.getNombre(),
-                    cantidad,
-                    String.format("$%.2f", precio),
-                    String.format("$%.2f", subtotal)
-                });
-                
-//                modelo.addRow(new Object[]{
-//                    null, // Imagen renderizada
-//                    "prueba",
-//                    1,
-//                    "$100.00",
-//                    "$100.00"
-//                });
-
-
-                total += subtotal;
-            } else {
-                System.err.println("❌ Producto nulo en DetalleCarrito.");
             }
         }
+        else{
+            System.out.println("No hay carrito activo para este usuario.");
+        }
+        
+        
 
         // Actualiza el total
-        DefaultTableModel modeloTotales = (DefaultTableModel) jTable2.getModel();
+        DefaultTableModel modeloTotales = (DefaultTableModel) JTTotal.getModel();
         modeloTotales.setRowCount(0);
         modeloTotales.addRow(new Object[]{String.format("$%.2f", total)});
+    }
+    
+    public void recargarCarrito(){
+        cargarProductosDelCarrito();
     }
     
     private void prepararTabla(){
@@ -361,18 +432,19 @@ public class P_CarritoVentas extends javax.swing.JPanel {
         });
     }
     
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    private javax.swing.JTable JTTotal;
+    private javax.swing.JButton jBPago;
+    private javax.swing.JComboBox<MetodoPago> jCBMetodoPago;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JList<String> jList1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jSPTabla;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTable jTCarrito;
-    private javax.swing.JTable jTable2;
     private javax.swing.JLabel lblDireccionEntrega;
     // End of variables declaration//GEN-END:variables
 }

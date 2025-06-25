@@ -22,7 +22,10 @@ import javax.swing.JFileChooser;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
+import java.math.BigDecimal;
 import java.nio.file.Files;
+import java.util.Comparator;
+import java.util.List;
 
 
 /**
@@ -51,7 +54,18 @@ public class DialogAgregarProducto extends javax.swing.JDialog {
         Image img = icon.getImage().getScaledInstance(50, 50, Image.SCALE_SMOOTH); // ← Ajusta tamaño aquí
         jLCapibara.setIcon(new ImageIcon(img));
         
-        CategoriaDAO.cargarCategorias(jCBCategoria);
+        
+        //Cargar el JCombox
+        CategoriaDAO dao = new CategoriaDAO();
+        List<Categoria> categorias = dao.listarCategorias();
+        Categoria categoriaInicial = new Categoria(0, "Selecciona una categoría...");
+            Utilidades.cargarJComboBox(
+            jCBCategoria,                  
+            categorias,                    
+            categoriaInicial,              
+            Comparator.comparing(Categoria::getId), 
+            "Selecciona una categoría..."        
+            );
     }
 
     /**
@@ -214,17 +228,17 @@ public class DialogAgregarProducto extends javax.swing.JDialog {
         Categoria categoria = (Categoria) jCBCategoria.getSelectedItem();
         String nombre = jTFNombre.getText().trim();
         String descripcion = jTADescripcion.getText().trim();
-        Double precio = (Double) jSPrecio.getValue();
+        BigDecimal precio = BigDecimal.valueOf((Double) jSPrecio.getValue());
         int stock = (Integer) jSStock.getValue();
         
-        if (nombre.isEmpty() || descripcion.isEmpty() || precio <= 0.00 || categoria == null || categoria.getId() == 0) {
+        if (nombre.isEmpty() || descripcion.isEmpty() || precio.compareTo(BigDecimal.ZERO) <= 0 || categoria == null || categoria.getId() == 0) {
             StringBuilder errores = new StringBuilder("Corrige los siguientes campos:\n");
 
             if (nombre.isEmpty()) {
                 errores.append("- El nombre es obligatorio.\n");
             }
             
-            if (precio <= 0.00) {
+            if (precio.compareTo(BigDecimal.ZERO) <= 0) {
                 errores.append("- El precio debe ser mayor a $0.00.\n");
             }
             

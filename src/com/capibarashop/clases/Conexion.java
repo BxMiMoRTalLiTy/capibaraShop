@@ -15,7 +15,7 @@ import java.sql.SQLException;
 public class Conexion {
     public static Connection getConexion(){
         String url = "jdbc:sqlserver://localhost:1433;"
-                + "databaseName=DB_TiendaCapibara;"
+                + "databaseName=DB_TiendaCapibaraOnline;"
                 + "user=sa;"
                 + "password=basedatos;"
                 + "encrypt=true;"
